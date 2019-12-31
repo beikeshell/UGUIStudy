@@ -65,7 +65,8 @@ namespace UnityEngine.EventSystems
         private GameObject m_PointerPress;
 
         /// <summary>
-        /// The raw GameObject for the last press event. This means that it is the 'pressed' GameObject even if it can not receive the press event itself.
+        /// The raw GameObject for the last press event.
+        /// This means that it is the 'pressed' GameObject even if it can not receive the press event itself.
         /// </summary>
         public GameObject lastPress { get; private set; }
 
@@ -93,6 +94,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Is it possible to click this frame
+        /// 是不是符合条件的点击
         /// </summary>
         public bool eligibleForClick { get; set; }
 
@@ -118,6 +120,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// World-space position where a ray cast into the screen hits something
+        /// 射线投射到屏幕上的世界空间位置
         /// </summary>
 
         [Obsolete("Use either pointerCurrentRaycast.worldPosition or pointerPressRaycast.worldPosition")]
@@ -125,6 +128,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// World-space normal where a ray cast into the screen hits something
+        /// 射线投射到屏幕上的世界空间法向量
         /// </summary>
         [Obsolete("Use either pointerCurrentRaycast.worldNormal or pointerPressRaycast.worldNormal")]
         public Vector3 worldNormal { get; set; }
@@ -136,6 +140,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Number of clicks in a row.
+        /// 连续点击次数
         /// </summary>
         /// <example>
         /// <code>
@@ -160,6 +165,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The amount of scroll since the last update.
+        /// 上次更新后的滑动增量
         /// </summary>
         public Vector2 scrollDelta { get; set; }
 
@@ -178,6 +184,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The EventSystems.PointerEventData.InputButton for this event.
+        /// 用于鼠标，表示鼠标哪个按键被按下了
         /// </summary>
         public InputButton button { get; set; }
 

@@ -14,11 +14,11 @@ namespace UnityEngine.UI
     /// </summary>
     public class Selectable
         :
-        UIBehaviour,
-        IMoveHandler,
-        IPointerDownHandler, IPointerUpHandler,
-        IPointerEnterHandler, IPointerExitHandler,
-        ISelectHandler, IDeselectHandler
+            UIBehaviour,
+            IMoveHandler,
+            IPointerDownHandler, IPointerUpHandler,
+            IPointerEnterHandler, IPointerExitHandler,
+            ISelectHandler, IDeselectHandler
     {
         private static Selectable[] s_Selectables = new Selectable[10];
         private static int s_SelectableCount = 0;
@@ -64,7 +64,10 @@ namespace UnityEngine.UI
         /// <summary>
         /// How many selectable elements are currently active.
         /// </summary>
-        public static int allSelectableCount { get { return s_SelectableCount; } }
+        public static int allSelectableCount
+        {
+            get { return s_SelectableCount; }
+        }
 
         /// <summary>
         /// A List instance of the allSelectablesArray to maintain API compatibility.
@@ -73,10 +76,7 @@ namespace UnityEngine.UI
         [Obsolete("Replaced with allSelectablesArray to have better performance when disabling a element", false)]
         public static List<Selectable> allSelectables
         {
-            get
-            {
-                return new List<Selectable>(allSelectablesArray);
-            }
+            get { return new List<Selectable>(allSelectablesArray); }
         }
 
 
@@ -126,8 +126,7 @@ namespace UnityEngine.UI
         }
 
         // Navigation information.
-        [FormerlySerializedAs("navigation")]
-        [SerializeField]
+        [FormerlySerializedAs("navigation")] [SerializeField]
         private Navigation m_Navigation = Navigation.defaultNavigation;
 
         /// <summary>
@@ -157,32 +156,25 @@ namespace UnityEngine.UI
         }
 
         // Type of the transition that occurs when the button state changes.
-        [FormerlySerializedAs("transition")]
-        [SerializeField]
+        [FormerlySerializedAs("transition")] [SerializeField]
         private Transition m_Transition = Transition.ColorTint;
 
         // Colors used for a color tint-based transition.
-        [FormerlySerializedAs("colors")]
-        [SerializeField]
+        [FormerlySerializedAs("colors")] [SerializeField]
         private ColorBlock m_Colors = ColorBlock.defaultColorBlock;
 
         // Sprites used for a Image swap-based transition.
-        [FormerlySerializedAs("spriteState")]
-        [SerializeField]
+        [FormerlySerializedAs("spriteState")] [SerializeField]
         private SpriteState m_SpriteState;
 
-        [FormerlySerializedAs("animationTriggers")]
-        [SerializeField]
+        [FormerlySerializedAs("animationTriggers")] [SerializeField]
         private AnimationTriggers m_AnimationTriggers = new AnimationTriggers();
 
-        [Tooltip("Can the Selectable be interacted with?")]
-        [SerializeField]
+        [Tooltip("Can the Selectable be interacted with?")] [SerializeField]
         private bool m_Interactable = true;
 
         // Graphic that will be colored.
-        [FormerlySerializedAs("highlightGraphic")]
-        [FormerlySerializedAs("m_HighlightGraphic")]
-        [SerializeField]
+        [FormerlySerializedAs("highlightGraphic")] [FormerlySerializedAs("m_HighlightGraphic")] [SerializeField]
         private Graphic m_TargetGraphic;
 
 
@@ -210,7 +202,14 @@ namespace UnityEngine.UI
         /// }
         /// </code>
         /// </example>
-        public Navigation        navigation        { get { return m_Navigation; } set { if (SetPropertyUtility.SetStruct(ref m_Navigation, value))        OnSetProperty(); } }
+        public Navigation navigation
+        {
+            get { return m_Navigation; }
+            set
+            {
+                if (SetPropertyUtility.SetStruct(ref m_Navigation, value)) OnSetProperty();
+            }
+        }
 
         /// <summary>
         /// The type of transition that will be applied to the targetGraphic when the state changes.
@@ -233,7 +232,14 @@ namespace UnityEngine.UI
         /// }
         /// </code>
         /// </example>
-        public Transition        transition        { get { return m_Transition; } set { if (SetPropertyUtility.SetStruct(ref m_Transition, value))        OnSetProperty(); } }
+        public Transition transition
+        {
+            get { return m_Transition; }
+            set
+            {
+                if (SetPropertyUtility.SetStruct(ref m_Transition, value)) OnSetProperty();
+            }
+        }
 
         /// <summary>
         /// The ColorBlock for this selectable object.
@@ -259,7 +265,14 @@ namespace UnityEngine.UI
         /// }
         /// </code>
         /// </example>
-        public ColorBlock        colors            { get { return m_Colors; } set { if (SetPropertyUtility.SetStruct(ref m_Colors, value))            OnSetProperty(); } }
+        public ColorBlock colors
+        {
+            get { return m_Colors; }
+            set
+            {
+                if (SetPropertyUtility.SetStruct(ref m_Colors, value)) OnSetProperty();
+            }
+        }
 
         /// <summary>
         /// The SpriteState for this selectable object.
@@ -288,7 +301,14 @@ namespace UnityEngine.UI
         // }
         // </code>
         // </example>
-        public SpriteState       spriteState       { get { return m_SpriteState; } set { if (SetPropertyUtility.SetStruct(ref m_SpriteState, value))       OnSetProperty(); } }
+        public SpriteState spriteState
+        {
+            get { return m_SpriteState; }
+            set
+            {
+                if (SetPropertyUtility.SetStruct(ref m_SpriteState, value)) OnSetProperty();
+            }
+        }
 
         /// <summary>
         /// The AnimationTriggers for this selectable object.
@@ -296,7 +316,14 @@ namespace UnityEngine.UI
         /// <remarks>
         /// Modifications will not be visible if transition is not Animation.
         /// </remarks>
-        public AnimationTriggers animationTriggers { get { return m_AnimationTriggers; } set { if (SetPropertyUtility.SetClass(ref m_AnimationTriggers, value)) OnSetProperty(); } }
+        public AnimationTriggers animationTriggers
+        {
+            get { return m_AnimationTriggers; }
+            set
+            {
+                if (SetPropertyUtility.SetClass(ref m_AnimationTriggers, value)) OnSetProperty();
+            }
+        }
 
         /// <summary>
         /// Graphic that will be transitioned upon.
@@ -320,7 +347,14 @@ namespace UnityEngine.UI
         /// }
         /// </code>
         /// </example>
-        public Graphic           targetGraphic     { get { return m_TargetGraphic; } set { if (SetPropertyUtility.SetClass(ref m_TargetGraphic, value))     OnSetProperty(); } }
+        public Graphic targetGraphic
+        {
+            get { return m_TargetGraphic; }
+            set
+            {
+                if (SetPropertyUtility.SetClass(ref m_TargetGraphic, value)) OnSetProperty();
+            }
+        }
 
         /// <summary>
         /// Is this object interactable.
@@ -349,26 +383,28 @@ namespace UnityEngine.UI
         /// }
         /// </code>
         /// </example>
-        public bool              interactable
+        public bool interactable
         {
             get { return m_Interactable; }
             set
             {
                 if (SetPropertyUtility.SetStruct(ref m_Interactable, value))
                 {
-                    if (!m_Interactable && EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject)
+                    if (!m_Interactable && EventSystem.current != null &&
+                        EventSystem.current.currentSelectedGameObject == gameObject)
                         EventSystem.current.SetSelectedGameObject(null);
                     OnSetProperty();
                 }
             }
         }
 
-        private bool             isPointerInside   { get; set; }
-        private bool             isPointerDown     { get; set; }
-        private bool             hasSelection      { get; set; }
+        private bool isPointerInside { get; set; }
+        private bool isPointerDown { get; set; }
+        private bool hasSelection { get; set; }
 
         protected Selectable()
-        {}
+        {
+        }
 
         /// <summary>
         /// Convenience function that converts the referenced Graphic to a Image, if possible.
@@ -413,6 +449,7 @@ namespace UnityEngine.UI
         }
 
         private readonly List<CanvasGroup> m_CanvasGroupCache = new List<CanvasGroup>();
+
         protected override void OnCanvasGroupChanged()
         {
             // Figure out if parent groups allow interaction
@@ -433,11 +470,13 @@ namespace UnityEngine.UI
                         groupAllowInteraction = false;
                         shouldBreak = true;
                     }
+
                     // if this is a 'fresh' group, then break
                     // as we should not consider parents
                     if (m_CanvasGroupCache[i].ignoreParentGroups)
                         shouldBreak = true;
                 }
+
                 if (shouldBreak)
                     break;
 
@@ -501,6 +540,7 @@ namespace UnityEngine.UI
                 Array.Copy(s_Selectables, temp, s_Selectables.Length);
                 s_Selectables = temp;
             }
+
             s_Selectables[s_SelectableCount++] = this;
             isPointerDown = false;
             DoStateTransition(currentSelectionState, true);
@@ -542,6 +582,7 @@ namespace UnityEngine.UI
                 if (s_Selectables[i] == null || s_Selectables[i].m_WillRemove)
                     s_Selectables[i] = s_Selectables[--s_SelectableCount];
             }
+
             s_IsDirty = false;
         }
 
@@ -770,7 +811,7 @@ namespace UnityEngine.UI
 #endif
 
                 var selRect = sel.transform as RectTransform;
-                Vector3 selCenter = selRect != null ? (Vector3)selRect.rect.center : Vector3.zero;
+                Vector3 selCenter = selRect != null ? (Vector3) selRect.rect.center : Vector3.zero;
                 Vector3 myVector = sel.transform.TransformPoint(selCenter) - pos;
 
                 // Value that is the distance out along the direction.
@@ -803,6 +844,7 @@ namespace UnityEngine.UI
                     bestPick = sel;
                 }
             }
+
             return bestPick;
         }
 
@@ -853,10 +895,12 @@ namespace UnityEngine.UI
             {
                 return m_Navigation.selectOnLeft;
             }
+
             if ((m_Navigation.mode & Navigation.Mode.Horizontal) != 0)
             {
                 return FindSelectable(transform.rotation * Vector3.left);
             }
+
             return null;
         }
 
@@ -890,10 +934,12 @@ namespace UnityEngine.UI
             {
                 return m_Navigation.selectOnRight;
             }
+
             if ((m_Navigation.mode & Navigation.Mode.Horizontal) != 0)
             {
                 return FindSelectable(transform.rotation * Vector3.right);
             }
+
             return null;
         }
 
@@ -927,10 +973,12 @@ namespace UnityEngine.UI
             {
                 return m_Navigation.selectOnUp;
             }
+
             if ((m_Navigation.mode & Navigation.Mode.Vertical) != 0)
             {
                 return FindSelectable(transform.rotation * Vector3.up);
             }
+
             return null;
         }
 
@@ -964,10 +1012,12 @@ namespace UnityEngine.UI
             {
                 return m_Navigation.selectOnDown;
             }
+
             if ((m_Navigation.mode & Navigation.Mode.Vertical) != 0)
             {
                 return FindSelectable(transform.rotation * Vector3.down);
             }
+
             return null;
         }
 
@@ -1036,7 +1086,8 @@ namespace UnityEngine.UI
 
         void TriggerAnimation(string triggername)
         {
-            if (transition != Transition.Animation || animator == null || !animator.isActiveAndEnabled || !animator.hasBoundPlayables || string.IsNullOrEmpty(triggername))
+            if (transition != Transition.Animation || animator == null || !animator.isActiveAndEnabled ||
+                !animator.hasBoundPlayables || string.IsNullOrEmpty(triggername))
                 return;
 
             animator.ResetTrigger(m_AnimationTriggers.normalTrigger);

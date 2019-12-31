@@ -37,6 +37,7 @@ namespace UnityEngine.UI
 
     /// <summary>
     /// This is an element that can live on a Canvas.
+    /// Canvas上的所有元素都会继承ICanvasElement，其Rebuild方法可以根据指定的阶段状态来执行重新构建动作
     /// </summary>
     public interface ICanvasElement
     {
@@ -105,7 +106,8 @@ namespace UnityEngine.UI
 
             var isUnityObject = element is Object;
             if (isUnityObject)
-                valid = (element as Object) != null; //Here we make use of the overloaded UnityEngine.Object == null, that checks if the native object is alive.
+                valid = (element as Object) != null;
+            //Here we make use of the overloaded UnityEngine.Object == null, that checks if the native object is alive.
 
             return valid;
         }

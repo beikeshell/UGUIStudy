@@ -163,7 +163,9 @@ namespace UnityEngine.UI
             }
             else
             {
+                // pos表示第一个子节点（即将放置的子节点）的起始位置，后边遍历的过程中这个值会逐渐递增
                 float pos = (axis == 0 ? padding.left : padding.top);
+                // itemFlexibleMultiplier表示如果LayoutGroup尺寸真的比preferred更大时，将对各子节点的尺寸方法的系数（前提是子节点的flexible为正数）
                 float itemFlexibleMultiplier = 0;
                 float surplusSpace = size - GetTotalPreferredSize(axis);
 
@@ -175,6 +177,8 @@ namespace UnityEngine.UI
                         itemFlexibleMultiplier = surplusSpace / GetTotalFlexibleSize(axis);
                 }
 
+                // minMaxLerp表示当preferred大于min时，将会根据该LayoutGroup的尺寸和preferred作比较，
+                // 得出在min和preferred之间插值的系数，同时又有Clamp01以确保不会超过preferred；
                 float minMaxLerp = 0;
                 if (GetTotalMinSize(axis) != GetTotalPreferredSize(axis))
                     minMaxLerp = Mathf.Clamp01((size - GetTotalMinSize(axis)) / (GetTotalPreferredSize(axis) - GetTotalMinSize(axis)));

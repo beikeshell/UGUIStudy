@@ -17,6 +17,7 @@ namespace UnityEngine.UI
 
     /// <summary>
     ///   Interface for elements that can be clipped if they are under an IClipper
+    ///   实现此接口的类可以被Clipper（如RectMask2D）裁减
     /// </summary>
     public interface IClippable
     {

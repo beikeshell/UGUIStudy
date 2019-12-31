@@ -36,7 +36,9 @@ namespace UnityEngine.EventSystems
         {}
 #endif
         /// <summary>
-        /// This callback is called if an associated RectTransform has its dimensions changed. The call is also made to all child rect transforms, even if the child transform itself doesn't change - as it could have, depending on its anchoring.
+        /// This callback is called if an associated RectTransform has its dimensions changed.
+        /// The call is also made to all child rect transforms, even if the child transform itself doesn't change - as it could have,
+        /// depending on its anchoring.
         /// </summary>
         protected virtual void OnRectTransformDimensionsChange()
         {}
@@ -63,7 +65,9 @@ namespace UnityEngine.EventSystems
         /// Returns true if the native representation of the behaviour has been destroyed.
         /// </summary>
         /// <remarks>
-        /// When a parent canvas is either enabled, disabled or a nested canvas's OverrideSorting is changed this function is called. You can for example use this to modify objects below a canvas that may depend on a parent canvas - for example, if a canvas is disabled you may want to halt some processing of a UI element.
+        /// When a parent canvas is either enabled, disabled or a nested canvas's OverrideSorting is changed this function is called.
+        /// You can for example use this to modify objects below a canvas that may depend on a parent canvas -
+        /// for example, if a canvas is disabled you may want to halt some processing of a UI element.
         /// </remarks>
         public bool IsDestroyed()
         {

@@ -8,7 +8,8 @@ namespace UnityEngine.UI
     ///   Utility class that is used to help with Text update.
     /// </summary>
     /// <remarks>
-    /// When Unity rebuilds a font atlas a callback is sent to the font. Using this class you can register your text as needing to be rebuilt if the font atlas is updated.
+    /// When Unity rebuilds a font atlas a callback is sent to the font.
+    /// Using this class you can register your text as needing to be rebuilt if the font atlas is updated.
     /// </remarks>
     public static class FontUpdateTracker
     {

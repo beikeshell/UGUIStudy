@@ -9,7 +9,8 @@ namespace UnityEngine.UI
     /// Resizes a RectTransform to fit the size of its content.
     /// </summary>
     /// <remarks>
-    /// The ContentSizeFitter can be used on GameObjects that have one or more ILayoutElement components, such as Text, Image, HorizontalLayoutGroup, VerticalLayoutGroup, and GridLayoutGroup.
+    /// The ContentSizeFitter can be used on GameObjects that have one or more ILayoutElement components,
+    /// such as Text, Image, HorizontalLayoutGroup, VerticalLayoutGroup, and GridLayoutGroup.
     /// </remarks>
     public class ContentSizeFitter : UIBehaviour, ILayoutSelfController
     {

@@ -12,6 +12,9 @@ namespace UnityEngine.UI
 {
     /// <summary>
     /// Base class for all UI components that should be derived from when creating new Graphic types.
+    /// 1、不支持同一个GameObject上挂载多个此组件
+    /// 2、需要CanvasRenderer组件支持
+    /// 3、需要RectTransform组件支持
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CanvasRenderer))]
@@ -110,7 +113,8 @@ namespace UnityEngine.UI
         /// Base color of the Graphic.
         /// </summary>
         /// <remarks>
-        /// The builtin UI Components use this as their vertex color. Use this to fetch or change the Color of visual UI elements, such as an Image.
+        /// The builtin UI Components use this as their vertex color.
+        /// Use this to fetch or change the Color of visual UI elements, such as an Image.
         /// </remarks>
         /// <example>
         /// <code>
@@ -193,13 +197,15 @@ namespace UnityEngine.UI
         /// <summary>
         /// Set all properties of the Graphic dirty and needing rebuilt.
         /// Dirties Layout, Vertices, and Materials.
+        /// 设置Graphic所有属性（包括layout， vertices， materials）为脏标记，表示自己需要被重建
         /// </summary>
         public virtual void SetAllDirty()
         {
             // Optimization: Graphic layout doesn't need recalculation if
-            // the underlying Sprite is the same size with the same texture.
+            // the underlying(底层的) Sprite is the same size with the same texture.
             // (e.g. Sprite sheet texture animation)
 
+            //m_SkipLayoutUpdate 和 m_SkipMaterialUpdate标记会在子类Image中更新，更新的时机为重新给sprite属性赋值时
             if (m_SkipLayoutUpdate)
             {
                 m_SkipLayoutUpdate = false;
@@ -348,7 +354,8 @@ namespace UnityEngine.UI
         /// A reference to the Canvas this Graphic is rendering to.
         /// </summary>
         /// <remarks>
-        /// In the situation where the Graphic is used in a hierarchy with multiple Canvases, the Canvas closest to the root will be used.
+        /// In the situation where the Graphic is used in a hierarchy with multiple Canvases,
+        /// the Canvas closest to the root will be used.
         /// </remarks>
         public Canvas canvas
         {
@@ -432,7 +439,10 @@ namespace UnityEngine.UI
         /// The material that will be sent for Rendering (Read only).
         /// </summary>
         /// <remarks>
-        /// This is the material that actually gets sent to the CanvasRenderer. By default it's the same as [[Graphic.material]]. When extending Graphic you can override this to send a different material to the CanvasRenderer than the one set by Graphic.material. This is useful if you want to modify the user set material in a non destructive manner.
+        /// This is the material that actually gets sent to the CanvasRenderer.
+        /// By default it's the same as [[Graphic.material]].
+        /// When extending Graphic you can override this to send a different material to the CanvasRenderer than the one set by Graphic.material.
+        /// This is useful if you want to modify the user set material in a non destructive manner.
         /// </remarks>
         public virtual Material materialForRendering
         {
@@ -457,7 +467,8 @@ namespace UnityEngine.UI
         ///
         /// When implementing your own Graphic you can override this to control which texture goes through the UI Rendering pipeline.
         ///
-        /// Bear in mind that Unity tries to batch UI elements together to improve performance, so its ideal to work with atlas to reduce the number of draw calls.
+        /// Bear in mind that Unity tries to batch UI elements together to improve performance,
+        /// so its ideal to work with atlas to reduce the number of draw calls.
         /// </remarks>
         public virtual Texture mainTexture
         {
@@ -757,7 +768,9 @@ namespace UnityEngine.UI
         public virtual void SetNativeSize() {}
 
         /// <summary>
-        /// When a GraphicRaycaster is raycasting into the scene it does two things. First it filters the elements using their RectTransform rect. Then it uses this Raycast function to determine the elements hit by the raycast.
+        /// When a Graphic Raycaster is raycasting into the scene it does two things.
+        /// First it filters the elements using their RectTransform rect.
+        /// Then it uses this Raycast function to determine the elements hit by the raycast.
         /// </summary>
         /// <param name="sp">Screen point being tested</param>
         /// <param name="eventCamera">Camera that is being used for the testing.</param>

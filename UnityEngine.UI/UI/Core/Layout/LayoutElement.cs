@@ -23,7 +23,8 @@ namespace UnityEngine.UI
         /// Should this RectTransform be ignored by the layout system?
         /// </summary>
         /// <remarks>
-        /// Setting this property to true will make a parent layout group component not consider this RectTransform part of the group. The RectTransform can then be manually positioned despite being a child GameObject of a layout group.
+        /// Setting this property to true will make a parent layout group component not consider this RectTransform part of the group.
+        /// The RectTransform can then be manually positioned despite being a child GameObject of a layout group.
         /// </remarks>
         public virtual bool ignoreLayout { get { return m_IgnoreLayout; } set { if (SetPropertyUtility.SetStruct(ref m_IgnoreLayout, value)) SetDirty(); } }
 

@@ -88,6 +88,7 @@ namespace UnityEngine.UI
         /// </summary>
         public BlockingObjects blockingObjects { get {return m_BlockingObjects; } set { m_BlockingObjects = value; } }
 
+        // m_BlockingMask是LayerMask用于按层筛选投射目标
         [SerializeField]
         protected LayerMask m_BlockingMask = kNoEventMaskSet;
 
@@ -128,10 +129,15 @@ namespace UnityEngine.UI
             var currentEventCamera = eventCamera; // Property can call Camera.main, so cache the reference
 
             if (canvas.renderMode == RenderMode.ScreenSpaceOverlay || currentEventCamera == null)
+                //Canvas.targetDisplay => For Overlay mode, display index on which the UI canvas will appear.
                 displayIndex = canvas.targetDisplay;
             else
                 displayIndex = currentEventCamera.targetDisplay;
 
+            // Display.RelativeMouseAt => Query relative mouse coordinates.
+            // RelativeMouseAt can be used to query relative mouse input coordinates and the screen in which Mouse Input is recorded.
+            // This is only valid on the Windows Desktop platforms with Multiple Displays.
+            // x, y returns the coordinates in relative space and z returns the screen in which Mouse Input is handled.
             var eventPosition = Display.RelativeMouseAt(eventData.position);
             if (eventPosition != Vector3.zero)
             {
@@ -175,11 +181,17 @@ namespace UnityEngine.UI
             if (pos.x < 0f || pos.x > 1f || pos.y < 0f || pos.y > 1f)
                 return;
 
+            // Distance from camera to target point.
+            // hitDistance表示相机到投射目标点的距离。后边会根据这个距离值筛选掉一部分Graphic
             float hitDistance = float.MaxValue;
 
             Ray ray = new Ray();
 
             if (currentEventCamera != null)
+                // Camera.ScreenPointToRay => Returns a ray going from camera through a screen point.
+                // Resulting ray is in world space, starting on the near plane of the camera
+                // and going through position's (x,y) pixel coordinates on the screen (position.z is ignored).
+                // Screen space is defined in pixels. The bottom-left of the screen is (0,0); the right-top is (pixelWidth -1,pixelHeight -1).
                 ray = currentEventCamera.ScreenPointToRay(eventPosition);
 
             if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && blockingObjects != BlockingObjects.None)
@@ -198,6 +210,7 @@ namespace UnityEngine.UI
                 {
                     if (ReflectionMethodsCache.Singleton.raycast3D != null)
                     {
+                        // ReflectionMethodsCache.Singleton.raycast3D这样的方法实际上调用的就是Physics.Raycast(...)
                         var hits = ReflectionMethodsCache.Singleton.raycast3DAll(ray, distanceToClipPlane, (int)m_BlockingMask);
                         if (hits.Length > 0)
                             hitDistance = hits[0].distance;
@@ -219,12 +232,14 @@ namespace UnityEngine.UI
 
             Raycast(canvas, currentEventCamera, eventPosition, canvasGraphics, m_RaycastResults);
 
+            // 判断对应的GameObject是否有效appendGraphic，即是否继续处理追加该Graphic到射线投射结果的列表
             int totalCount = m_RaycastResults.Count;
             for (var index = 0; index < totalCount; index++)
             {
                 var go = m_RaycastResults[index].gameObject;
                 bool appendGraphic = true;
 
+                // 如果ignoreReversedGraphics ，则只是追加朝向为正的Graphic
                 if (ignoreReversedGraphics)
                 {
                     if (currentEventCamera == null)
@@ -302,6 +317,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Perform a raycast into the screen and collect all graphics underneath it.
+        /// 首先是做了一些是否有效的判断，然后会在层级结构中自下而上地遍历，直到没有更多的父级节点或者由overrideSorting的Canvas为止。
+        /// 遍历过程中，如果遇到有ICanvasRaycastFilter（Image实现有此接口）和CanvasGroup则要根据二者的实现及参数做出一些判断，
+        /// 如果都通过了检测，则认为这次投射有效返回true。
         /// </summary>
         [NonSerialized] static readonly List<Graphic> s_SortedGraphics = new List<Graphic>();
         private static void Raycast(Canvas canvas, Camera eventCamera, Vector2 pointerPosition, IList<Graphic> foundGraphics, List<Graphic> results)
@@ -316,12 +334,15 @@ namespace UnityEngine.UI
                 if (graphic.depth == -1 || !graphic.raycastTarget || graphic.canvasRenderer.cull)
                     continue;
 
+                // pointer位置不在graphic中
                 if (!RectTransformUtility.RectangleContainsScreenPoint(graphic.rectTransform, pointerPosition, eventCamera))
                     continue;
 
+                // graph不在eventCamera的裁剪空间中
                 if (eventCamera != null && eventCamera.WorldToScreenPoint(graphic.rectTransform.position).z > eventCamera.farClipPlane)
                     continue;
 
+                // 执行射线检测
                 if (graphic.Raycast(pointerPosition, eventCamera))
                 {
                     s_SortedGraphics.Add(graphic);

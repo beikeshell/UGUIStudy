@@ -8,7 +8,10 @@ namespace UnityEngine.EventSystems
     /// A base module that raises events and sends them to GameObjects.
     /// </summary>
     /// <remarks>
-    /// An Input Module is a component of the EventSystem that is responsible for raising events and sending them to GameObjects for handling. The BaseInputModule is a class that all Input Modules in the EventSystem inherit from. Examples of provided modules are TouchInputModule and StandaloneInputModule, if these are inadequate for your project you can create your own by extending from the BaseInputModule.
+    /// An Input Module is a component of the EventSystem that is responsible for raising events and sending them to GameObjects for handling.
+    /// The BaseInputModule is a class that all Input Modules in the EventSystem inherit from.
+    /// Examples of provided modules are TouchInputModule and StandaloneInputModule,
+    /// if these are inadequate for your project you can create your own by extending from the BaseInputModule.
     /// </remarks>
     /// <example>
     /// <code>
@@ -32,6 +35,8 @@ namespace UnityEngine.EventSystems
     /// }
     /// </code>
     /// </example>
+    ///
+
     public abstract class BaseInputModule : UIBehaviour
     {
         [NonSerialized]
@@ -80,7 +85,8 @@ namespace UnityEngine.EventSystems
         /// Used to override the default BaseInput for the input module.
         /// </summary>
         /// <remarks>
-        /// With this it is possible to bypass the Input system with your own but still use the same InputModule. For example this can be used to feed fake input into the UI or interface with a different input system.
+        /// With this it is possible to bypass the Input system with your own but still use the same InputModule.
+        /// For example this can be used to feed fake input into the UI or interface with a different input system.
         /// </remarks>
         public BaseInput inputOverride
         {
@@ -188,9 +194,20 @@ namespace UnityEngine.EventSystems
             return null;
         }
 
-        // walk up the tree till a common root between the last entered and the current entered is foung
-        // send exit events up to (but not inluding) the common root. Then send enter events up to
+        // walk up the tree till a common root between the last entered and the current entered is found
+        // send exit events up to (but not including) the common root. Then send enter events up to
         // (but not including the common root).
+        /// <summary>
+        ///整个过程分为几步：
+        /// - 如果没有新进入的对象，或者currentPointerData.pointerEnter是null，那么就不处理进入（Enter），只处理离开（Exit），
+        ///   即对currentPointerData.hovered中的各个对象都执行离开的事件，并在最后确保将currentPointerData.pointerEnter设为null
+        /// - 如果对象没有变化，就是说即将进入的对象和当前事件数据中的进入对象是同一个对象，直接返回。
+        /// - 寻找当前事件数据中的进入对象currentPointerData.pointerEnter和即将要进入的对象newEnterTarget二者的共同父节点。
+        ///   然后如前边说的那样，从旧的进入对象到共有父节点，逐个执行离开事件，并从hovered中移除，此操作不含共有父节点；
+        ///   接下来从新的进入对象到共有父节点，逐个执行进入事件，并将其加入hovered，此操作不包含共有父节点。
+        /// </summary>
+        /// <param name="currentPointerData"></param>
+        /// <param name="newEnterTarget"></param>
         protected void HandlePointerExitAndEnter(PointerEventData currentPointerData, GameObject newEnterTarget)
         {
             // if we have no target / pointerEnter has been deleted
@@ -255,13 +272,13 @@ namespace UnityEngine.EventSystems
         /// </summary>
         /// <param name="x">X movement.</param>
         /// <param name="y">Y movement.</param>
-        /// <param name="deadZone">Dead zone.</param>
+        /// <param name="moveDeadZone">Dead zone.</param>
         protected virtual AxisEventData GetAxisEventData(float x, float y, float moveDeadZone)
         {
             if (m_AxisEventData == null)
                 m_AxisEventData = new AxisEventData(eventSystem);
 
-            m_AxisEventData.Reset();
+            m_AxisEventData.Reset(); //设置m_Used标记为假，表示该事件数据未被使用过
             m_AxisEventData.moveVector = new Vector2(x, y);
             m_AxisEventData.moveDir = DetermineMoveDirection(x, y, moveDeadZone);
             return m_AxisEventData;
@@ -298,13 +315,15 @@ namespace UnityEngine.EventSystems
         }
 
         /// <summary>
-        /// Called when the module is deactivated. Override this if you want custom code to execute when you deactivate your module.
+        /// Called when the module is deactivated.
+        /// Override this if you want custom code to execute when you deactivate your module.
         /// </summary>
         public virtual void DeactivateModule()
         {}
 
         /// <summary>
-        /// Called when the module is activated. Override this if you want custom code to execute when you activate your module.
+        /// Called when the module is activated.
+        /// Override this if you want custom code to execute when you activate your module.
         /// </summary>
         public virtual void ActivateModule()
         {}
@@ -316,7 +335,8 @@ namespace UnityEngine.EventSystems
         {}
 
         /// <summary>
-        /// Check to see if the module is supported. Override this if you have a platform specific module (eg. TouchInputModule that you do not want to activate on standalone.)
+        /// Check to see if the module is supported. Override this if you have a platform specific module
+        /// (eg. TouchInputModule that you do not want to activate on standalone.)
         /// </summary>
         /// <returns>Is the module supported.</returns>
         public virtual bool IsModuleSupported()

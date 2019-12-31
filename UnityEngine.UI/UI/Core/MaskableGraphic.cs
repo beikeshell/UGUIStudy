@@ -6,6 +6,8 @@ namespace UnityEngine.UI
 {
     /// <summary>
     /// A Graphic that is capable of being masked out.
+    /// MaskableGraphic用于实现绘制相关的功能，并且相比于Graphic它支持被裁剪（clip）和被遮罩（mask）。
+    /// 是Graphic的衍生类，是Image、Text等类的父类。
     /// </summary>
     public abstract class MaskableGraphic : Graphic, IClippable, IMaskable, IMaterialModifier
     {
@@ -15,6 +17,9 @@ namespace UnityEngine.UI
         [NonSerialized]
         protected Material m_MaskMaterial;
 
+        /// <summary>
+        /// 此成员是一个RectMask2D(实现了IClipper，是裁剪动作的实施者)
+        /// </summary>
         [NonSerialized]
         private RectMask2D m_ParentMask;
 
@@ -43,7 +48,8 @@ namespace UnityEngine.UI
         /// Callback issued when culling changes.
         /// </summary>
         /// <remarks>
-        /// Called whene the culling state of this MaskableGraphic either becomes culled or visible. You can use this to control other elements of your UI as culling happens.
+        /// Called when the culling state of this MaskableGraphic either becomes culled or visible.
+        /// You can use this to control other elements of your UI as culling happens.
         /// </remarks>
         public CullStateChangedEvent onCullStateChanged
         {
@@ -112,6 +118,12 @@ namespace UnityEngine.UI
             UpdateCull(cull);
         }
 
+        /// <summary>
+        /// 更新裁剪信息，告诉canvasRenderer是否要裁剪并且如果裁剪状态发生了变化会SetVerticesDirty()。
+        /// 代码如下：传入一个bool参数表示是否需要裁剪。在UpdateClipParent中如果判断出来不需要裁剪，会调用此方法并传入false，
+        /// 在Cull被调用时也会判断并调用此方法更新裁剪状态。
+        /// </summary>
+        /// <param name="cull"></param>
         private void UpdateCull(bool cull)
         {
             if (canvasRenderer.cull != cull)
@@ -119,6 +131,7 @@ namespace UnityEngine.UI
                 canvasRenderer.cull = cull;
                 UISystemProfilerApi.AddMarker("MaskableGraphic.cullingChanged", this);
                 m_OnCullStateChanged.Invoke(cull);
+                //父类方法
                 OnCullingChanged();
             }
         }
@@ -231,6 +244,10 @@ namespace UnityEngine.UI
             }
         }
 
+        /// <summary>
+        /// 在调用UpdateClipParent()时，会调用静态的工具方法MaskUtilities.GetRectMaskForClippable 重新计算m_ParentMask，
+        /// 并且会将自身（IClippable）添加到实施裁减的父对象中（AddClippable），以接受其裁剪的动作。
+        /// </summary>
         private void UpdateClipParent()
         {
             var newParent = (maskable && IsActive()) ? MaskUtilities.GetRectMaskForClippable(this) : null;

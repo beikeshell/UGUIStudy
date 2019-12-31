@@ -6,7 +6,7 @@ namespace UnityEngine.UI
 {
     [Obsolete("Use BaseMeshEffect instead", true)]
     /// <summary>
-    ///   Obsolete class use BaseMeshEffect instead.
+    /// Obsolete class use BaseMeshEffect instead.
     /// </summary>
     public abstract class BaseVertexEffect
     {

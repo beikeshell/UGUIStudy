@@ -10,6 +10,7 @@ namespace UnityEngine.UI
     [Serializable]
     /// <summary>
     /// Struct for storing Text generation settings.
+    /// 记录的全部都是标签组件的相关信息，通过FontData.defaultFontData，我们可以看到其中的一些主要的字段
     /// </summary>
     public class FontData : ISerializationCallbackReceiver
     {
@@ -146,7 +147,10 @@ namespace UnityEngine.UI
         /// Use the extents of glyph geometry to perform horizontal alignment rather than glyph metrics.
         /// </summary>
         /// <remarks>
-        /// This can result in better fitting left and right alignment, but may result in incorrect positioning when attempting to overlay multiple fonts (such as a specialized outline font) on top of each other.
+        /// This can result in better fitting left and right alignment,
+        /// but may result in incorrect positioning when attempting to
+        /// overlay multiple fonts (such as a specialized outline font) on top of each other.
+        /// 这样可以更好地拟合左右对齐方式，但是当尝试将多种字体（例如专用轮廓字体）彼此叠加时，可能会导致定位不正确。
         /// </remarks>
         public bool alignByGeometry
         {

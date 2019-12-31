@@ -14,7 +14,9 @@ namespace UnityEngine.UI
         /// </summary>
         /// <param name="rect">The RectTransform of the layout element to query.</param>
         /// <param name="axis">The axis to query. This can be 0 or 1.</param>
-        /// <remarks>All components on the GameObject that implement the ILayoutElement are queried. The one with the highest priority which has a value for this setting is used. If multiple componets have this setting and have the same priority, the maximum value out of those is used.</remarks>
+        /// <remarks>All components on the GameObject that implement the ILayoutElement are queried.
+        /// The one with the highest priority which has a value for this setting is used.
+        /// If multiple components have this setting and have the same priority, the maximum value out of those is used.</remarks>
         public static float GetMinSize(RectTransform rect, int axis)
         {
             if (axis == 0)
@@ -57,7 +59,9 @@ namespace UnityEngine.UI
         /// </summary>
         /// <param name="rect">The RectTransform of the layout element to query.</param>
         /// <remarks>
-        /// All components on the GameObject that implement the ILayoutElement are queried. The one with the highest priority which has a value for this setting is used. If multiple componets have this setting and have the same priority, the maximum value out of those is used.
+        /// All components on the GameObject that implement the ILayoutElement are queried.
+        /// The one with the highest priority which has a value for this setting is used.
+        /// If multiple components have this setting and have the same priority, the maximum value out of those is used.
         /// </remarks>
         public static float GetMinWidth(RectTransform rect)
         {

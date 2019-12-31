@@ -62,6 +62,10 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Given a touch populate the PointerEventData and return if we are pressed or released.
+        /// 获取（产生）PointerEventData，判断其状态，并且要判断它是否是新创建的created，
+        /// input.phase表示当前触摸事件位于的阶段（Began，Moved，Stationary，Ended和Canceled ，也是由底层的api获取的）。
+        /// 根据是否新建以及触摸的阶段来对其进行的一些初始化工作或值的更新。
+        /// 最后是一些射线投射的内容，使用当前事件做射线投射，获取第一个投射结果并更新pointerData.pointerCurrentRaycast
         /// </summary>
         /// <param name="input">Touch being processed</param>
         /// <param name="pressed">Are we pressed this frame</param>
@@ -317,6 +321,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Process movement for the current frame with the given pointer event.
+        /// ProcessMove和ProcessDrag是触摸点击和鼠标点击公用的逻辑
         /// </summary>
         protected virtual void ProcessMove(PointerEventData pointerEvent)
         {

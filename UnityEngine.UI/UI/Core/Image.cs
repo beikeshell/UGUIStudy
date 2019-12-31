@@ -33,11 +33,17 @@ namespace UnityEngine.UI
             /// Displays the Image as a 9-sliced graphic.
             /// </summary>
             /// <remarks>
-            /// A 9-sliced image displays a central area stretched across the image surrounded by a border comprising of 4 corners and 4 stretched edges.
+            /// A 9-sliced image displays a central area stretched across the image surrounded
+            /// by a border comprising of 4 corners and 4 stretched edges.
             ///
-            /// This has the effect of creating a resizable skinned rectangular element suitable for dialog boxes, windows, and general UI elements.
+            /// This has the effect of creating a resizable skinned rectangular element suitable for dialog boxes,
+            /// windows, and general UI elements.
             ///
             /// Note: For this method to work properly the Sprite assigned to Image.sprite needs to have Sprite.border defined.
+            ///
+            /// 9切片的图像显示整个图像上延伸的中心区域，该区域被包括4个角和4个拉伸边缘的边界围绕。
+            ///
+            /// 切片
             /// </remarks>
             Sliced,
 
@@ -45,17 +51,28 @@ namespace UnityEngine.UI
             /// Displays a sliced Sprite with its resizable sections tiled instead of stretched.
             /// </summary>
             /// <remarks>
-            /// A Tiled image behaves similarly to a UI.Image.Type.Sliced|Sliced image, except that the resizable sections of the image are repeated instead of being stretched. This can be useful for detailed UI graphics that do not look good when stretched.
+            /// A Tiled image behaves similarly to a UI.Image.Type.Sliced|Sliced image,
+            /// except that the resizable sections of the image are repeated instead of being stretched.
+            /// This can be useful for detailed UI graphics that do not look good when stretched.
             ///
             /// It uses the Sprite.border value to determine how each part (border and center) should be tiled.
             ///
-            /// The Image sections will repeat the corresponding section in the Sprite until the whole section is filled. The corner sections will be unaffected and will draw in the same way as a Sliced Image. The edges will repeat along their lengths. The center section will repeat across the whole central part of the Image.
+            /// The Image sections will repeat the corresponding section in the Sprite until the whole section is filled.
+            /// The corner sections will be unaffected and will draw in the same way as a Sliced Image.
+            /// The edges will repeat along their lengths. The center section will repeat across the whole central part of the Image.
             ///
             /// The Image section will repeat the corresponding section in the Sprite until the whole section is filled.
             ///
-            /// Be aware that if you are tiling a Sprite with borders or a packed sprite, a mesh will be generated to create the tiles. The size of the mesh will be limited to 16250 quads; if your tiling would require more tiles, the size of the tiles will be enlarged to ensure that the number of generated quads stays below this limit.
+            /// Be aware that if you are tiling a Sprite with borders or a packed sprite,
+            /// a mesh will be generated to create the tiles. The size of the mesh will be limited to 16250 quads;
+            /// if your tiling would require more tiles, the size of the tiles will be enlarged to
+            /// ensure that the number of generated quads stays below this limit.
             ///
-            /// For optimum efficiency, use a Sprite with no borders and with no packing, and make sure the Sprite.texture wrap mode is set to TextureWrapMode.Repeat.These settings will prevent the generation of additional geometry.If this is not possible, limit the number of tiles in your Image.
+            /// For optimum efficiency, use a Sprite with no borders and with no packing,
+            /// and make sure the Sprite.texture wrap mode is set to TextureWrapMode.Repeat.
+            /// These settings will prevent the generation of additional geometry.
+            /// If this is not possible, limit the number of tiles in your Image.
+            /// 平铺
             /// </remarks>
             Tiled,
 
@@ -63,9 +80,13 @@ namespace UnityEngine.UI
             /// Displays only a portion of the Image.
             /// </summary>
             /// <remarks>
-            /// A Filled Image will display a section of the Sprite, with the rest of the RectTransform left transparent. The Image.fillAmount determines how much of the Image to show, and Image.fillMethod controls the shape in which the Image will be cut.
+            /// A Filled Image will display a section of the Sprite, with the rest of the RectTransform left transparent.
+            /// The Image.fillAmount determines how much of the Image to show,
+            /// and Image.fillMethod controls the shape in which the Image will be cut.
             ///
-            /// This can be used for example to display circular or linear status information such as timers, health bars, and loading bars.
+            /// This can be used for example to display circular or linear status information such as timers, health bars,
+            /// and loading bars.
+            /// 填充
             /// </remarks>
             Filled
         }
@@ -95,7 +116,8 @@ namespace UnityEngine.UI
             /// The Image will be filled Radially with the radial center in one of the corners.
             /// </summary>
             /// <remarks>
-            /// For this method the Image.fillAmount represents an angle between 0 and 90 degrees. The Image will be cut by a line passing at the Image.fillOrigin at the specified angle.
+            /// For this method the Image.fillAmount represents an angle between 0 and 90 degrees.
+            /// The Image will be cut by a line passing at the Image.fillOrigin at the specified angle.
             /// </remarks>
             Radial90,
 
@@ -103,7 +125,8 @@ namespace UnityEngine.UI
             /// The Image will be filled Radially with the radial center in one of the edges.
             /// </summary>
             /// <remarks>
-            /// For this method the Image.fillAmount represents an angle between 0 and 180 degrees. The Image will be cut by a line passing at the Image.fillOrigin at the specified angle.
+            /// For this method the Image.fillAmount represents an angle between 0 and 180 degrees.
+            /// The Image will be cut by a line passing at the Image.fillOrigin at the specified angle.
             /// </remarks>
             Radial180,
 
@@ -111,7 +134,8 @@ namespace UnityEngine.UI
             /// The Image will be filled Radially with the radial center at the center.
             /// </summary>
             /// <remarks>
-            /// or this method the Image.fillAmount represents an angle between 0 and 360 degrees. The Arc defined by the center of the Image, the Image.fillOrigin and the angle will be cut from the Image.
+            /// or this method the Image.fillAmount represents an angle between 0 and 360 degrees.
+            /// The Arc defined by the center of the Image, the Image.fillOrigin and the angle will be cut from the Image.
             /// </remarks>
             Radial360,
         }
@@ -236,7 +260,9 @@ namespace UnityEngine.UI
         /// The sprite that is used to render this image.
         /// </summary>
         /// <remarks>
-        /// This returns the source Sprite of an Image. This Sprite can also be viewed and changed in the Inspector as part of an Image component. This can also be used to change the Sprite using a script.
+        /// This returns the source Sprite of an Image.
+        /// This Sprite can also be viewed and changed in the Inspector as part of an Image component.
+        /// This can also be used to change the Sprite using a script.
         /// </remarks>
         /// <example>
         /// <code>
@@ -738,6 +764,11 @@ namespace UnityEngine.UI
             m_FillAmount = Mathf.Clamp(m_FillAmount, 0f, 1f);
         }
 
+        /// <summary>
+        /// 保持sprite高宽比
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="spriteSize"></param>
         private void PreserveSpriteAspectRatio(ref Rect rect, Vector2 spriteSize)
         {
             var spriteRatio = spriteSize.x / spriteSize.y;
@@ -758,11 +789,23 @@ namespace UnityEngine.UI
         }
 
         /// Image's dimensions used for drawing. X = left, Y = bottom, Z = right, W = top.
+        /// GetDrawingDimensions()用来获取Image的顶点坐标。传入一个布尔参数表示是否要为图片保持原有的宽高比。
+        /// 得到一个Vector4返回值，Vector4中的四个值分别是左、下、右、上边界的值（即x min、y min、x max和y max）。
+        ///
+        /// 这里还涉及到一个工具类，Sprite.DataUtility， 用于获取Sprite的数据。
+        /// 它包含有四个静态方法，与前边遇到的GetPadding相似都需要传入一个Sprite实例来获取它的信息：
+        /// （1）GetPadding： 获取padding，如果sprite的纹理来自图集，那么当其被打到图集里时可能四边会被裁掉一些透明区域，
+        ///      padding即表示上下左右四边被裁掉的区域的大小，单位为像素
+        /// （2）GetInnerUV： 获取内圈UV（纹理坐标）
+        /// （3）GetMinSize： 获取最小宽高尺寸
+        /// （4）GetOuterUV： 获取外圈UV（纹理坐标）
         private Vector4 GetDrawingDimensions(bool shouldPreserveAspect)
         {
             var padding = activeSprite == null ? Vector4.zero : Sprites.DataUtility.GetPadding(activeSprite);
+            // activeSprite.rect 此方法返回一个Rect，其中包含Sprite原始纹理的坐标与尺寸。
             var size = activeSprite == null ? Vector2.zero : new Vector2(activeSprite.rect.width, activeSprite.rect.height);
 
+            // GetPixelAdjustedRect()，定义在抽象类Graphic中，用于获取像素修正过的Rect
             Rect r = GetPixelAdjustedRect();
             // Debug.Log(string.Format("r:{2}, size:{0}, padding:{1}", size, padding, r));
 
@@ -906,6 +949,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Generate vertices for a simple Image.
+        /// 获取顶点坐标v和顶点纹理坐标uv，填充到vh中。
+        /// 获取顶点坐标时直接使用GetDrawingDimensions()方法，
+        /// 而在获取纹理UV时，会调用静态方法Sprites.DataUtility.GetOuterUV()，如果没有指定sprite则返回四个0。
         /// </summary>
         void GenerateSimpleSprite(VertexHelper vh, bool lPreserveAspect)
         {
@@ -1042,6 +1088,22 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Generate vertices for a tiled Image.
+        /// 另一种常用的Image类型是Tiled。当Image尺寸大于Sprite的尺寸时，会用平铺的方式填充。
+        /// 注意对于带有border的Sprite，平铺时会保留border的部分，只将Sprite中border以外的纹理做平铺（border中除了四个角上的区域以外会沿着单个方向平铺）。
+        ///
+        /// 首先也是计算了一系列的参数，xMin、xMax、yMin和yMax保存的是去除border以外的部分的待填充区域，
+        /// uvMin和uvMax也保存的是去除border之后的纹理坐标。在绘制时，分为两种情况：
+        /// (1) Sprite有border、纹理不是Repeat模式、或者Sprite因为打合图等原因导致不能重复纹理来平铺；
+        /// (2) 除了上边以外的情况，可以直接用纹理填充；
+        ///
+        /// 因此第二种情况会比较简单，直接绘制一个Quad，设置纹理坐标即可。
+        /// 比较复杂的是第一种情况，GenerateTiledSprite(...)中大部分代码是用于处理第一种情况的，
+        /// 绘制时需要分解为多个Quad，包括border部分及中心部分。各个Quad同样是需要计算顶点坐标和UV。
+        /// 使用m_FillCenter来判断是否绘制中心区域，根据是否hasBorder来判断是否要处理border区域的逻辑。
+        /// 在计算各Quad的信息之前，首先确定参数tileWidth和tileHeight，默认取Sprite中心区域宽高的像素数，
+        /// 如果是0则表示宽度或高度为整个Image中心区域的宽度或高度，接下来计算Quad数量（顶点的数量），
+        /// 如果顶点数量大于65000，则会输出错误，并强制修改tileWidth和tileHeight，增大每个tile（Quad）的尺寸，
+        /// 从而减少tile的数量，进而减少顶点数，以确保顶点数目不会超过65000。
         /// </summary>
 
         void GenerateTiledSprite(VertexHelper toFill)
@@ -1082,6 +1144,7 @@ namespace UnityEngine.UI
             var clipped = uvMax;
 
             // if either width is zero we cant tile so just assume it was the full width.
+            // 确定参数tileWidth和tileHeight，默认取Sprite中心区域宽高的像素数，如果是0则表示宽度或高度为整个Image中心区域的宽度或高度
             if (tileWidth <= 0)
                 tileWidth = xMax - xMin;
 
@@ -1115,7 +1178,10 @@ namespace UnityEngine.UI
 
                     if (nVertices > 65000.0)
                     {
-                        Debug.LogError("Too many sprite tiles on Image \"" + name + "\". The tile size will be increased. To remove the limit on the number of tiles, set the Wrap mode to Repeat in the Image Import Settings", this);
+                        Debug.LogError("Too many sprite tiles on Image \"" + name + "\". " +
+                                       "The tile size will be increased. " +
+                                       "To remove the limit on the number of tiles, " +
+                                       "set the Wrap mode to Repeat in the Image Import Settings", this);
 
                         double maxTiles = 65000.0 / 4.0; // Max number of vertices is 65000; 4 vertices per tile.
                         double imageRatio;
@@ -1152,7 +1218,10 @@ namespace UnityEngine.UI
                         double nVertices = (nTilesH + nTilesW + 2.0 /*corners*/) * 2.0 /*sides*/ * 4.0 /*vertices per tile*/;
                         if (nVertices > 65000.0)
                         {
-                            Debug.LogError("Too many sprite tiles on Image \"" + name + "\". The tile size will be increased. To remove the limit on the number of tiles, set the Wrap mode to Repeat in the Image Import Settings", this);
+                            Debug.LogError("Too many sprite tiles on Image \"" + name + "\". " +
+                                           "The tile size will be increased. " +
+                                           "To remove the limit on the number of tiles, " +
+                                           "set the Wrap mode to Repeat in the Image Import Settings", this);
 
                             double maxTiles = 65000.0 / 4.0; // Max number of vertices is 65000; 4 vertices per tile.
                             double imageRatio = (double)nTilesW / nTilesH;
@@ -1173,6 +1242,8 @@ namespace UnityEngine.UI
 
                 if (m_FillCenter)
                 {
+                    // 没有什么复杂逻辑，从下到上、从左到右填充，注意有一个变量clipped，记录的是最上一行及最右一列的位于右上角的纹理坐标。
+                    // 最上一行和最右一列的Quad可能不会是完整的Sprite的核心区域，因此需要绘制时需要与yMax、xMax作比较，并且记录纹理坐标clipped
                     // TODO: we could share vertices between quads. If vertex sharing is implemented. update the computation for the number of vertices accordingly.
                     for (long j = 0; j < nTilesH; j++)
                     {
@@ -1199,6 +1270,10 @@ namespace UnityEngine.UI
                 }
                 if (hasBorder)
                 {
+                    // 先绘制左右两边的边界，再绘制上下的边界，最后是四个角。
+                    // 每轮绘制之前会重置clipped为uvMax，同样每列的最后一个和每行的最后一个需要与yMax和xMax比较，并修改clipped的值。
+                    // 最后是绘制四个角，会用到outer中保留的纹理坐标。
+                    // Left and right tiled border
                     clipped = uvMax;
                     for (long j = 0; j < nTilesH; j++)
                     {
@@ -1345,6 +1420,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Generate vertices for a filled Image.
+        /// 这里也用到了两组Vector3数组，s_Xy和s_Uv以复用和缓存临时变量。
+        /// 水平填充和竖直填充的类型比较简单，根据m_FillOrigin和m_FillAmount计算出来顶点坐标（v表示）和纹理坐标（tx0、tx1、ty0、ty1表示），
+        /// 顶点坐标和纹理坐标会分别被保存在s_Xy和s_Uv中。
         /// </summary>
 
         static readonly Vector3[] s_Xy = new Vector3[4];
@@ -1419,6 +1497,9 @@ namespace UnityEngine.UI
                         if (RadialCut(s_Xy, s_Uv, m_FillAmount, m_FillClockwise, m_FillOrigin))
                             AddQuad(toFill, s_Xy, color, s_Uv);
                     }
+                    // 180度的情况，需要将整个绘制区域分为两部分，
+                    // 并根据起点位置、填充方向等确定fx0, fx1, fy0, fy1这组参数来切割Image及纹理。
+                    // 最终转化为90度的问题来解决，360度填充也同理。
                     else if (fillMethod == FillMethod.Radial180)
                     {
                         for (int side = 0; side < 2; ++side)
@@ -1551,6 +1632,8 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Adjust the specified quad, making it be radially filled instead.
+        /// 根据填充比例，如果小于0.001f直接不绘制，如果大于0.999f直接绘制全部。
+        /// 后边根据填充比例fill、填充方向是否invert（其实就是顺时针和逆时针方向），以及原点位置，来计算（修改）顶点坐标xy和纹理uv。
         /// </summary>
 
         static bool RadialCut(Vector3[] xy, Vector3[] uv, float fill, bool invert, int corner)
@@ -1580,6 +1663,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Adjust the specified quad, making it be radially filled instead.
+        /// 调整指定的四边形，使其径向填充。
         /// </summary>
 
         static void RadialCut(Vector3[] xy, float cos, float sin, bool invert, int corner)
@@ -1675,6 +1759,7 @@ namespace UnityEngine.UI
         /// <summary>
         /// If there is a sprite being rendered returns the size of that sprite.
         /// In the case of a slided or tiled sprite will return the calculated minimum size possible
+        /// 获取preferredWidth和preferredHeight的具体实现，如果时Sliced或者Tiled，使用Sprite的MinSize，否则使用rect的尺寸。
         /// </summary>
         public virtual float preferredWidth
         {
@@ -1725,7 +1810,8 @@ namespace UnityEngine.UI
         public virtual int layoutPriority { get { return 0; } }
 
         /// <summary>
-        /// Calculate if the ray location for this image is a valid hit location. Takes into account a Alpha test threshold.
+        /// Calculate if the ray location for this image is a valid hit location.
+        /// Takes into account a Alpha test threshold.
         /// </summary>
         /// <param name="screenPoint">The screen point to check against</param>
         /// <param name="eventCamera">The camera in which to use to calculate the coordinating position</param>

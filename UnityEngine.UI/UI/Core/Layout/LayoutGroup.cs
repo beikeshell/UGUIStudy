@@ -26,7 +26,9 @@ namespace UnityEngine.UI
         /// The alignment to use for the child layout elements in the layout group.
         /// </summary>
         /// <remarks>
-        ///  some child layout elements specify no flexible width and height, the children may not take up all the available space inside the layout group. The alignment setting specifies how to align them within the layout group when this is the case.
+        /// some child layout elements specify no flexible width and height,
+        /// the children may not take up all the available space inside the layout group.
+        /// The alignment setting specifies how to align them within the layout group when this is the case.
         ///  </remarks>
         public TextAnchor childAlignment { get { return m_ChildAlignment; } set { SetProperty(ref m_ChildAlignment, value); } }
 
@@ -50,6 +52,10 @@ namespace UnityEngine.UI
         protected List<RectTransform> rectChildren { get { return m_RectChildren; } }
 
         // ILayoutElement Interface
+        /// <summary>
+        /// 挂载LayoutGroup组件的对象遍历自己的子节点，剔除ignoreLayout全部为true的子节点。最后将有效的子节点放入m_RectChildren。
+        /// </summary>
+
         public virtual void CalculateLayoutInputHorizontal()
         {
             m_RectChildren.Clear();
@@ -182,13 +188,15 @@ namespace UnityEngine.UI
         /// Returns the calculated position of the first child layout element along the given axis.
         /// </summary>
         /// <param name="axis">The axis index. 0 is horizontal and 1 is vertical.</param>
-        /// <param name="requiredSpaceWithoutPadding">The total space required on the given axis for all the layout elements including spacing and excluding padding.</param>
+        /// <param name="requiredSpaceWithoutPadding">The total space required on the given axis for all the layout elements
+        /// including spacing and excluding padding.</param>
         /// <returns>The position of the first child along the given axis.</returns>
         protected float GetStartOffset(int axis, float requiredSpaceWithoutPadding)
         {
             float requiredSpace = requiredSpaceWithoutPadding + (axis == 0 ? padding.horizontal : padding.vertical);
             float availableSpace = rectTransform.rect.size[axis];
             float surplusSpace = availableSpace - requiredSpace;
+            
             float alignmentOnAxis = GetAlignmentOnAxis(axis);
             return (axis == 0 ? padding.left : padding.top) + surplusSpace * alignmentOnAxis;
         }

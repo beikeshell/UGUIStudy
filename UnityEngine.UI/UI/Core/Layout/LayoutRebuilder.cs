@@ -61,8 +61,15 @@ namespace UnityEngine.UI
         /// </summary>
         /// <param name="layoutRoot">The layout element to perform the layout rebuild on.</param>
         /// <remarks>
-        /// Normal use of the layout system should not use this method. Instead MarkLayoutForRebuild should be used instead, which triggers a delayed layout rebuild during the next layout pass. The delayed rebuild automatically handles objects in the entire layout hierarchy in the correct order, and prevents multiple recalculations for the same layout elements.
-        /// However, for special layout calculation needs, ::ref::ForceRebuildLayoutImmediate can be used to get the layout of a sub-tree resolved immediately. This can even be done from inside layout calculation methods such as ILayoutController.SetLayoutHorizontal orILayoutController.SetLayoutVertical. Usage should be restricted to cases where multiple layout passes are unavaoidable despite the extra cost in performance.
+        /// Normal use of the layout system should not use this method.
+        /// Instead MarkLayoutForRebuild should be used instead, which triggers a delayed layout rebuild during the next layout pass.
+        /// The delayed rebuild automatically handles objects in the entire layout hierarchy in the correct order,
+        /// and prevents multiple recalculations for the same layout elements.
+        /// However, for special layout calculation needs,
+        /// ::ref::ForceRebuildLayoutImmediate can be used to get the layout of a sub-tree resolved immediately.
+        /// This can even be done from inside layout calculation methods such as
+        /// ILayoutController.SetLayoutHorizontal orILayoutController.SetLayoutVertical.
+        /// Usage should be restricted to cases where multiple layout passes are unavaoidable despite the extra cost in performance.
         /// </remarks>
         public static void ForceRebuildLayoutImmediate(RectTransform layoutRoot)
         {
@@ -163,6 +170,9 @@ namespace UnityEngine.UI
             bool validLayoutGroup = true;
             RectTransform layoutRoot = rect;
             var parent = layoutRoot.parent as RectTransform;
+
+            //双重循环的目的是：找到rect被嵌套的ILayoutGroup根节点，因为rect的layout改变会影响到所有被嵌套的ILayoutGroup的layout计算。
+            //所以，如果rect是ILayoutGroup的子孙节点，则需要更新全部的ILayoutGroup的Layout。
             while (validLayoutGroup && !(parent == null || parent.gameObject == null))
             {
                 validLayoutGroup = false;
@@ -171,6 +181,7 @@ namespace UnityEngine.UI
                 for (int i = 0; i < comps.Count; ++i)
                 {
                     var cur = comps[i];
+                    //如果ILayoutGroup是激活状态且可用，则认为是有效的ILayoutGroup
                     if (cur != null && cur is Behaviour && ((Behaviour)cur).isActiveAndEnabled)
                     {
                         validLayoutGroup = true;
@@ -184,6 +195,7 @@ namespace UnityEngine.UI
 
             // We know the layout root is valid if it's not the same as the rect,
             // since we checked that above. But if they're the same we still need to check.
+            // 如果rect所在GameObject本身并不包含ILayoutController组件，则认为rect无效
             if (layoutRoot == rect && !ValidController(layoutRoot, comps))
             {
                 ListPool<Component>.Release(comps);
@@ -194,6 +206,7 @@ namespace UnityEngine.UI
             ListPool<Component>.Release(comps);
         }
 
+        
         private static bool ValidController(RectTransform layoutRoot, List<Component> comps)
         {
             if (layoutRoot == null || layoutRoot.gameObject == null)

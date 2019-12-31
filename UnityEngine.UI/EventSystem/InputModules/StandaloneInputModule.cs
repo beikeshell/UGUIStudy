@@ -83,7 +83,8 @@ namespace UnityEngine.EventSystems
         /// Force this module to be active.
         /// </summary>
         /// <remarks>
-        /// If there is no module active with higher priority (ordered in the inspector) this module will be forced active even if valid enabling conditions are not met.
+        /// If there is no module active with higher priority (ordered in the inspector) this module will be forced active
+        /// even if valid enabling conditions are not met.
         /// </remarks>
         public bool forceModuleActive
         {
@@ -165,6 +166,9 @@ namespace UnityEngine.EventSystems
             }
         }
 
+        /// <summary>
+        /// 在EventSystem中每帧调用
+        /// </summary>
         public override void UpdateModule()
         {
             if (!eventSystem.isFocused && ShouldIgnoreEventsOnNoFocus())
@@ -179,6 +183,7 @@ namespace UnityEngine.EventSystems
                 return;
             }
 
+            //更新和获取鼠标位置
             m_LastMousePosition = m_MousePosition;
             m_MousePosition = input.mousePosition;
         }
@@ -274,6 +279,9 @@ namespace UnityEngine.EventSystems
             ClearSelection();
         }
 
+        /// <summary>
+        /// 在EventSystem Update中每帧调用
+        /// </summary>
         public override void Process()
         {
             if (!eventSystem.isFocused && ShouldIgnoreEventsOnNoFocus())
@@ -285,6 +293,7 @@ namespace UnityEngine.EventSystems
             // they change the current selected gameobject and the submit button is a touch / mouse button.
 
             // touch needs to take precedence because of the mouse emulation layer
+            // 处理触摸事件ProcessTouchEvents()，如果返回false且有鼠标显示，则处理鼠标事件ProcessMouseEvent()
             if (!ProcessTouchEvents() && input.mousePresent)
                 ProcessMouseEvent();
 
@@ -325,7 +334,8 @@ namespace UnityEngine.EventSystems
         }
 
         /// <summary>
-        /// This method is called by Unity whenever a touch event is processed. Override this method with a custom implementation to process touch events yourself.
+        /// This method is called by Unity whenever a touch event is processed.
+        /// Override this method with a custom implementation to process touch events yourself.
         /// </summary>
         /// <param name="pointerEvent">Event data relating to the touch event, such as position and ID to be passed to the touch event destination object.</param>
         /// <param name="pressed">This is true for the first frame of a touch event, and false thereafter. This can therefore be used to determine the instant a touch event occurred.</param>
@@ -338,6 +348,12 @@ namespace UnityEngine.EventSystems
             var currentOverGo = pointerEvent.pointerCurrentRaycast.gameObject;
 
             // PointerDown notification
+            //初始化pointerEvent；
+            //处理enter和exit事件，清除旧的选择对象selected，更新新的选择对象，并在HandlePointerExitAndEnter(...)中触发enter和exit的事件；
+            //处理pointerDown的事件，这里使用的是ExecuteHierarchy，即会对从当前对象所在的树状结构中自下而上第一个可以响应该事件的对象执行该事件，后边讲到ExecuteEvents时还会再提到；
+            //如果没有对象响应pointerDown，则会尝试执行click事件，也是会自下而上找一遍；
+            //如果响应pointerDown的对象newPressed与上一帧的是同一对象，则处理连续点击的逻辑，竟然有一个写死的0.3f，然后是更新数据；
+            //最后执行一个初始化潜在拖拽的事件；
             if (pressed)
             {
                 pointerEvent.eligibleForClick = true;
@@ -399,6 +415,12 @@ namespace UnityEngine.EventSystems
             }
 
             // PointerUp notification
+            //处理pointerUp的事件；
+            //如果响应pointerUp的对象pointerUpHandler与按下对象相同且当前事件可用于点击，则执行click事件
+            //如果没有click事件，则判断是否有drag的对象以及当前是否是dragging，如有则执行drop事件；
+            //更新一波数据，主要是清除；
+            //执行endDrag并清除一些数据；
+            //执行exit并清除一些数据；
             if (released)
             {
                 // Debug.Log("Executing pressup on: " + pointer.pointerPress);
@@ -554,10 +576,13 @@ namespace UnityEngine.EventSystems
             ProcessDrag(leftButtonData.buttonData);
 
             // Now process right / middle clicks
-            ProcessMousePress(mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData);
-            ProcessDrag(mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData.buttonData);
-            ProcessMousePress(mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData);
-            ProcessDrag(mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
+            var rightBtnData = mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData;
+            ProcessMousePress(rightBtnData);
+            ProcessDrag(rightBtnData.buttonData);
+
+            var middleBtnData = mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData;
+            ProcessMousePress(middleBtnData);
+            ProcessDrag(middleBtnData.buttonData);
 
             if (!Mathf.Approximately(leftButtonData.buttonData.scrollDelta.sqrMagnitude, 0.0f))
             {
@@ -566,6 +591,10 @@ namespace UnityEngine.EventSystems
             }
         }
 
+        /// <summary>
+        /// 向选中的GameObject发送Update事件
+        /// </summary>
+        /// <returns></returns>
         protected bool SendUpdateEventToSelectedObject()
         {
             if (eventSystem.currentSelectedGameObject == null)

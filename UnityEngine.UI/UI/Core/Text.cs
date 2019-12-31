@@ -71,6 +71,8 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Called by the FontUpdateTracker when the texture associated with a font is modified.
+        /// 修改与字体关联的纹理时，由FontUpdateTracker调用。
+        /// FontTextureChanged方法是在是在FontUpdateTracker.RebuildForFont(...)中调用的
         /// </summary>
         public void FontTextureChanged()
         {
@@ -102,11 +104,15 @@ namespace UnityEngine.UI
         /// The Font used by the text.
         /// </summary>
         /// <remarks>
-        /// This is the font used by the Text component. Use it to alter or return the font from the Text. There are many free fonts available online.
+        /// This is the font used by the Text component.
+        /// Use it to alter or return the font from the Text.
+        /// There are many free fonts available online.
         /// </remarks>
         /// <example>
         /// <code>
-        /// //Create a new Text GameObject by going to Create>UI>Text in the Editor. Attach this script to the Text GameObject. Then, choose or click and drag your own font into the Font section in the Inspector window.
+        /// //Create a new Text GameObject by going to Create>UI>Text in the Editor.
+        /// Attach this script to the Text GameObject.
+        /// Then, choose or click and drag your own font into the Font section in the Inspector window.
         ///
         /// using UnityEngine;
         /// using UnityEngine.UI;
@@ -299,10 +305,11 @@ namespace UnityEngine.UI
         }
 
         /// <summary>
-        /// The positioning of the text reliative to its [[RectTransform]].
+        /// The positioning of the text relative to its [[RectTransform]].
         /// </summary>
         /// <remarks>
-        /// This is the positioning of the Text relative to its RectTransform. You can alter this via script or in the Inspector of a Text component using the buttons in the Alignment section.
+        /// This is the positioning of the Text relative to its RectTransform.
+        /// You can alter this via script or in the Inspector of a Text component using the buttons in the Alignment section.
         /// </remarks>
         /// <example>
         /// <code>
@@ -362,7 +369,9 @@ namespace UnityEngine.UI
         /// Use the extents of glyph geometry to perform horizontal alignment rather than glyph metrics.
         /// </summary>
         /// <remarks>
-        /// This can result in better fitting left and right alignment, but may result in incorrect positioning when attempting to overlay multiple fonts (such as a specialized outline font) on top of each other.
+        /// This can result in better fitting left and right alignment,
+        /// but may result in incorrect positioning when attempting to overlay multiple fonts
+        /// (such as a specialized outline font) on top of each other.
         /// </remarks>
         public bool alignByGeometry
         {
@@ -384,12 +393,16 @@ namespace UnityEngine.UI
         /// The size that the Font should render at. Unit of measure is Points.
         /// </summary>
         /// <remarks>
-        /// This is the size of the Font of the Text. Use this to fetch or change the size of the Font. When changing the Font size, remember to take into account the RectTransform of the Text. Larger Font sizes or messages may not fit in certain rectangle sizes and do not show in the Scene.
+        /// This is the size of the Font of the Text.
+        /// Use this to fetch or change the size of the Font.
+        /// When changing the Font size, remember to take into account the RectTransform of the Text.
+        /// Larger Font sizes or messages may not fit in certain rectangle sizes and do not show in the Scene.
         /// Note: Point size is not consistent from one font to another.
         /// </remarks>
         /// <example>
         /// <code>
-        /// //For this script to work, create a new Text GameObject by going to Create>U>Text. Attach the script to the Text GameObject. Make sure the GameObject has a RectTransform component.
+        /// //For this script to work, create a new Text GameObject by going to Create>U>Text.
+        /// Attach the script to the Text GameObject. Make sure the GameObject has a RectTransform component.
         ///
         /// using UnityEngine;
         /// using UnityEngine.UI;
@@ -450,7 +463,8 @@ namespace UnityEngine.UI
         /// Horizontal overflow mode.
         /// </summary>
         /// <remarks>
-        /// When set to HorizontalWrapMode.Overflow, text can exceed the horizontal boundaries of the Text graphic. When set to HorizontalWrapMode.Wrap, text will be word-wrapped to fit within the boundaries.
+        /// When set to HorizontalWrapMode.Overflow, text can exceed the horizontal boundaries of the Text graphic.
+        /// When set to HorizontalWrapMode.Wrap, text will be word-wrapped to fit within the boundaries.
         /// </remarks>
         public HorizontalWrapMode horizontalOverflow
         {
@@ -490,7 +504,8 @@ namespace UnityEngine.UI
         }
 
         /// <summary>
-        /// Line spacing, specified as a factor of font line height. A value of 1 will produce normal line spacing.
+        /// Line spacing, specified as a factor of font line height.
+        /// A value of 1 will produce normal line spacing.
         /// </summary>
         public float lineSpacing
         {
@@ -534,7 +549,8 @@ namespace UnityEngine.UI
         /// Provides information about how fonts are scale to the screen.
         /// </summary>
         /// <remarks>
-        /// For dynamic fonts, the value is equivalent to the scale factor of the canvas. For non-dynamic fonts, the value is calculated from the requested text size and the size from the font.
+        /// For dynamic fonts, the value is equivalent to the scale factor of the canvas.
+        /// For non-dynamic fonts, the value is calculated from the requested text size and the size from the font.
         /// </remarks>
         public float pixelsPerUnit
         {
@@ -589,7 +605,8 @@ namespace UnityEngine.UI
         /// <summary>
         /// Convenience function to populate the generation setting for the text.
         /// </summary>
-        /// <param name="extents">The extents the text can draw in.</param>
+        /// <param name="extents">The extents the text can draw in. 文本绘制范围</param>
+        /// 是一个struct结构，没有在UGUI的源码中，暴露出来的公有属性和FontData几乎完全一样。存储文本的信息，提供给TextGenerator用以生成顶点。
         /// <returns>Generated settings.</returns>
         public TextGenerationSettings GetGenerationSettings(Vector2 extents)
         {
@@ -642,6 +659,12 @@ namespace UnityEngine.UI
         }
 
         readonly UIVertex[] m_TempVerts = new UIVertex[4];
+
+        /// <summary>
+        /// 在开始生成网格之前，首先会将m_DisableFontTextureRebuiltCallback置为true，即在此函数执行期间，禁止rebuild的回调。
+        /// 如果被调用了FontTextureChanged会直接返回。FontTextureChanged内会调用UpdateGeometry，增加一个状态判断避免循环调用。
+        /// </summary>
+        /// <param name="toFill"></param>
         protected override void OnPopulateMesh(VertexHelper toFill)
         {
             if (font == null)
@@ -655,6 +678,16 @@ namespace UnityEngine.UI
             Vector2 extents = rectTransform.rect.size;
 
             var settings = GetGenerationSettings(extents);
+
+            // 文本内容、文字设置传给cachedTextGenerator生成顶点
+            //
+            // 这一过程的源码并没有在UGUI中。接着获取顶点信息，保存到IList<UIVertex> verts，供后续的步骤使用。
+            // 判断是否需要计算偏移，取verts中的一个顶点（verts[0]），先计算其在RectTransform度量单位的坐标，
+            // 保存在roundingOffset中，然后计算其PixelAdjustPoint之后的坐标。
+            // 如果二者相等则无需偏移，否则偏移量为roundingOffset。
+            // 最后是向VertexHelper写入顶点数据。
+            // 在verts中存储的顶点坐标，每四个一组（对应一个字符）以AddUIVertexQuad的形式填入VertexHelper。
+            // 遍历顶点列表verts时使用i & 3相当于i对4取模。
             cachedTextGenerator.PopulateWithErrors(text, settings, gameObject);
 
             // Apply the offset to the vertices
@@ -676,7 +709,7 @@ namespace UnityEngine.UI
             {
                 for (int i = 0; i < vertCount; ++i)
                 {
-                    int tempVertsIndex = i & 3;
+                    int tempVertsIndex = i & 3; //相当于对4取模
                     m_TempVerts[tempVertsIndex] = verts[i];
                     m_TempVerts[tempVertsIndex].position *= unitsPerPixel;
                     m_TempVerts[tempVertsIndex].position.x += roundingOffset.x;

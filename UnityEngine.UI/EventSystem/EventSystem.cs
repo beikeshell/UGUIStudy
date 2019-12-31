@@ -11,8 +11,14 @@ namespace UnityEngine.EventSystems
     /// Handles input, raycasting, and sending events.
     /// </summary>
     /// <remarks>
-    /// The EventSystem is responsible for processing and handling events in a Unity scene. A scene should only contain one EventSystem. The EventSystem works in conjunction with a number of modules and mostly just holds state and delegates functionality to specific, overrideable components.
-    /// When the EventSystem is started it searches for any BaseInputModules attached to the same GameObject and adds them to an internal list. On update each attached module receives an UpdateModules call, where the module can modify internal state. After each module has been Updated the active module has the Process call executed.This is where custom module processing can take place.
+    /// The EventSystem is responsible for processing and handling events in a Unity scene.
+    /// A scene should only contain one EventSystem.
+    /// The EventSystem works in conjunction with a number of modules and mostly just holds state and delegates functionality to specific,
+    /// overrideable components.
+    /// When the EventSystem is started it searches for any BaseInputModules attached to the same GameObject and adds them to an internal list.
+    /// On update each attached module receives an UpdateModules call, where the module can modify internal state.
+    /// After each module has been Updated the active module has the Process call executed.
+    /// This is where custom module processing can take place.
     /// </remarks>
     public class EventSystem : UIBehaviour
     {
@@ -190,6 +196,22 @@ namespace UnityEngine.EventSystems
             SetSelectedGameObject(selected, baseEventDataCache);
         }
 
+        /// <summary>
+        /// 优先级依次是：
+        /// 如果是不同的Raycaster：
+        ///     module.eventCamera.depth 高者优先
+        ///     module.sortOrderPriority 高者优先
+        ///     module.renderOrderPriority 高者优先
+        /// 如果是相同的Raycaster：
+        ///     sortingLayer 高者优先
+        ///     sortingOrder 高者优先
+        ///     depth 高者优先
+        ///     distance 小者优先
+        ///     index 小者优先
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
         private static int RaycastComparer(RaycastResult lhs, RaycastResult rhs)
         {
             if (lhs.module != rhs.module)
@@ -239,6 +261,8 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Raycast into the scene using all configured BaseRaycasters.
+        /// 各个在RaycasterManager中记录的激活状态的Raycaster调用Raycast方法，在传入的raycastResults后追加射线投射结果。
+        /// 遍历全部的Raycaster之后，对所有的投射结果排序。
         /// </summary>
         /// <param name="eventData">Current pointer data.</param>
         /// <param name="raycastResults">List of 'hits' to populate.</param>
