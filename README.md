@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # README #
 
 This document details how to get it up and running on your computer and start modifying the code!
@@ -28,3 +29,7 @@ Please see the LICENSE file.
 
 ### Will you be taking pull requests? ###
 At this stage the UI system is undergoing further development internally with many design decisions still being debated and implemented. Also, we are waiting to see the volume of pull requests and the time it will take the process them. As such, we are prioritizing first bug fix pull requests and will iterate on this process going forward.
+=======
+# UGUIStudy
+记录UGUI源码学习
+>>>>>>> 15ae0880a1c960439c31515d7a93a28f9019270e
