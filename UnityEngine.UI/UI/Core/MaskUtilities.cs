@@ -10,6 +10,7 @@ namespace UnityEngine.UI
     {
         /// <summary>
         /// Notify all IClippables under the given component that they need to recalculate clipping.
+        /// Notify2DMaskStateChanged 告知指定组件之下的所有IClippable需要重新计算裁剪，即调用其RecalculateClipping()方法
         /// </summary>
         /// <param name="mask">The object thats changed for whose children should be notified.</param>
         public static void Notify2DMaskStateChanged(Component mask)
@@ -74,6 +75,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Find the stencil depth for a given element.
+        /// 计算了从给定节点transform到其对应节点stopAfter之间处于激活状态的Mask的数量，就是m_StencilValue的值
         /// </summary>
         /// <param name="transform">The starting transform to search.</param>
         /// <param name="stopAfter">Where the search of parents should stop</param>
@@ -109,6 +111,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Helper function to determine if the child is a descendant of father or is father.
+        /// 判断传入的两个Transform对象，是否后者是前者的子节点（后代结点）或者两个节点是同一个节点
         /// </summary>
         /// <param name="father">The transform to compare against.</param>
         /// <param name="child">The starting transform to search up the hierarchy.</param>
@@ -134,6 +137,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Find the correct RectMask2D for a given IClippable.
+        ///
+        /// 获取传入的IClippable所对应的RectMask2D对象，
+        /// 首先会获取所有的父节点上的RectMask2D对象，然后根据一些条件进行判断，直到获取到正确的RectMask2D对象并将其返回
         /// </summary>
         /// <param name="clippable">Clippable to search from.</param>
         /// <returns>The Correct RectMask2D</returns>
@@ -163,7 +169,8 @@ namespace UnityEngine.UI
                     clippable.gameObject.GetComponentsInParent(false, canvasComponents);
                     for (int i = canvasComponents.Count - 1; i >= 0; i--)
                     {
-                        if (!IsDescendantOrSelf(canvasComponents[i].transform, componentToReturn.transform) && canvasComponents[i].overrideSorting)
+                        if (!IsDescendantOrSelf(canvasComponents[i].transform, componentToReturn.transform)
+                            && canvasComponents[i].overrideSorting)
                         {
                             componentToReturn = null;
                             break;

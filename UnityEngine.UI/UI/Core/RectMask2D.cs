@@ -19,6 +19,8 @@ namespace UnityEngine.UI
     /// *Does not require stencil buffer / extra draw calls
     /// *Requires fewer draw calls
     /// *Culls elements that are outside the mask area.
+    ///
+    /// 继承UIBehaviour，实现了IClipper用于裁剪图像，实现了ICanvasRaycastFilter用于过滤UI的事件
     /// </remarks>
     public class RectMask2D : UIBehaviour, IClipper, ICanvasRaycastFilter
     {
@@ -31,17 +33,31 @@ namespace UnityEngine.UI
         [NonSerialized]
         private HashSet<MaskableGraphic> m_MaskableTargets = new HashSet<MaskableGraphic>();
 
+        /// <summary>
+        ///  裁剪的目标，是一个IClippable的集合HashSet<IClippable>
+        /// </summary>
         [NonSerialized]
         private HashSet<IClippable> m_ClipTargets = new HashSet<IClippable>();
 
+        /// <summary>
+        /// 是否需要重新计算裁剪矩形的状态值
+        /// </summary>
         [NonSerialized]
         private bool m_ShouldRecalculateClipRects;
 
+        /// <summary>
+        /// 包括自身在内的所有的作用于该RectMask2D的裁剪者的列表，是一个List<RectMask2D>
+        /// </summary>
         [NonSerialized]
         private List<RectMask2D> m_Clippers = new List<RectMask2D>();
 
         [NonSerialized]
         private Rect m_LastClipRectCanvasSpace;
+
+        /// <summary>
+        /// 强制执行裁剪。在执行裁剪时，即使当前裁剪矩形与旧的裁剪矩形相等也会为每个裁剪目标更新裁剪矩形。
+        /// 当增加或减少了裁减目标时，会将此值设为true
+        /// </summary>
         [NonSerialized]
         private bool m_ForceClip;
 
@@ -167,6 +183,7 @@ namespace UnityEngine.UI
             // do a recalculate here
             if (m_ShouldRecalculateClipRects)
             {
+                // 找出所有有效的RectMask2D
                 MaskUtilities.GetRectMasksForClip(this, m_Clippers);
                 m_ShouldRecalculateClipRects = false;
             }
@@ -176,8 +193,8 @@ namespace UnityEngine.UI
             bool validRect = true;
             Rect clipRect = Clipping.FindCullAndClipWorldRect(m_Clippers, out validRect);
 
-            // If the mask is in ScreenSpaceOverlay/Camera render mode, its content is only rendered when its rect
-            // overlaps that of the root canvas.
+            // If the mask is in ScreenSpaceOverlay / ScreenSpaceCamera render mode,
+            // its content is only rendered when its rect overlaps that of the root canvas.
             RenderMode renderMode = Canvas.rootCanvas.renderMode;
             bool maskIsCulled =
                 (renderMode == RenderMode.ScreenSpaceCamera || renderMode == RenderMode.ScreenSpaceOverlay) &&

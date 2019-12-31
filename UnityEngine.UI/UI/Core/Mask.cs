@@ -161,7 +161,11 @@ namespace UnityEngine.UI
                 return m_MaskMaterial;
             }
 
+            // 会产生两种材质，Mask自身使用maskMaterial，而非遮罩的材质会交给canvasRenderer。
             //otherwise we need to be a bit smarter and set some read / write masks
+            // Mask用于遮罩的材质的模板值计算方法为desiredStencilBit | (desiredStencilBit - 1)，
+            // 这意味着模板深度为x的MaskableGraphic，与模板深度为x-1的Mask，有相同的模板值。
+            // 绘制Mask时会将模板值以replace的操作形式写入模板缓冲区，从而实现被遮罩图像的绘制。
             var maskMaterial2 = StencilMaterial.Add(baseMaterial, desiredStencilBit | (desiredStencilBit - 1), StencilOp.Replace, CompareFunction.Equal, m_ShowMaskGraphic ? ColorWriteMask.All : 0, desiredStencilBit - 1, desiredStencilBit | (desiredStencilBit - 1));
             StencilMaterial.Remove(m_MaskMaterial);
             m_MaskMaterial = maskMaterial2;

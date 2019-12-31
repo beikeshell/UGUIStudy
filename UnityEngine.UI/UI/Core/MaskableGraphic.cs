@@ -19,6 +19,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// 此成员是一个RectMask2D(实现了IClipper，是裁剪动作的实施者)
+        ///
         /// </summary>
         [NonSerialized]
         private RectMask2D m_ParentMask;
@@ -78,6 +79,10 @@ namespace UnityEngine.UI
         [Obsolete("Not used anymore", true)]
         protected bool m_ShouldRecalculate = true;
 
+        /// <summary>
+        /// 一个整数成员变量，字面意思是模板值，前边说到了更新计算它的方法，即MaskUtilities.GetStencilDepth(...)，
+        /// 其实是计算了从该结点到其对应的顶部Canvas或overrideSorting的Canvas之间处于激活状态的Mask的数量，就是m_StencilValue的值
+        /// </summary>
         [NonSerialized]
         protected int m_StencilValue;
 
@@ -98,10 +103,38 @@ namespace UnityEngine.UI
             // if we have a enabled Mask component then it will
             // generate the mask material. This is an optimisation
             // it adds some coupling between components though :(
+
+            // StencilMaterial.Add(...)方法向传入的材质添加了一些模板信息（即后边的一长串参数），
+            // 返回设置好了模板参数的新的材质（StencilMaterial内部做了一些优化，
+            // 对于相同的模板参数会共用同一个材质对象）这个m_StencilValue通过一个简单的变换1 << m_StencilValue) - 1得到一个新的整数值，
+            // 这个值在后续的使用中称为stencilID，在StencilMaterial.Add(...)中我们看到有以下代码：
+            /*newEnt.customMat.SetInt("_Stencil", stencilID);
+            newEnt.customMat.SetInt("_StencilOp", (int)operation);
+            newEnt.customMat.SetInt("_StencilComp", (int)compareFunction);
+            newEnt.customMat.SetInt("_StencilReadMask", readMask);
+            newEnt.customMat.SetInt("_StencilWriteMask", writeMask);
+            newEnt.customMat.SetInt("_ColorMask", (int)colorWriteMask);
+            对应的，在UI默认的shader中有：
+            Stencil
+            {
+                Ref [_Stencil]
+                Comp [_StencilComp]
+                Pass [_StencilOp]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+            }
+
+            ColorMask [_ColorMask]*/
             Mask maskComponent = GetComponent<Mask>();
             if (m_StencilValue > 0 && (maskComponent == null || !maskComponent.IsActive()))
             {
-                var maskMat = StencilMaterial.Add(toUse, (1 << m_StencilValue) - 1, StencilOp.Keep, CompareFunction.Equal, ColorWriteMask.All, (1 << m_StencilValue) - 1, 0);
+                var maskMat = StencilMaterial.Add(toUse,
+                    (1 << m_StencilValue) - 1,
+                    StencilOp.Keep,
+                    CompareFunction.Equal,
+                    ColorWriteMask.All,
+                    (1 << m_StencilValue) - 1,
+                    0);
                 StencilMaterial.Remove(m_MaskMaterial);
                 m_MaskMaterial = maskMat;
                 toUse = m_MaskMaterial;
