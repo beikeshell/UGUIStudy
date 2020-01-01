@@ -4,21 +4,43 @@ using UnityEngine.EventSystems;
 
 namespace UnityEngine.UI
 {
+    // https://blog.csdn.net/inlet511/article/details/46822383 深入理解Canvas Scaler
+
     [RequireComponent(typeof(Canvas))]
     [ExecuteAlways]
     [AddComponentMenu("Layout/Canvas Scaler", 101)]
     [DisallowMultipleComponent]
     /// <summary>
-    ///   The Canvas Scaler component is used for controlling the overall scale and pixel density of UI elements in the Canvas. This scaling affects everything under the Canvas, including font sizes and image borders.
+    /// The Canvas Scaler component is used for controlling the overall scale and pixel density of UI elements in the Canvas.
+    /// This scaling affects everything under the Canvas, including font sizes and image borders.
+    /// Canvas Scaler组件用于控制Canvas中UI元素的整体比例和像素密度。该缩放影响Canvas下的所有元素，包括字体大小和图像边框。
     /// </summary>
     /// <remarks>
-    /// For a Canvas set to 'Screen Space - Overlay' or 'Screen Space - Camera', the Canvas Scaler UI Scale Mode can be set to Constant Pixel Size, Scale With Screen Size, or Constant Physical Size.
+    /// For a Canvas set to 'Screen Space - Overlay' or 'Screen Space - Camera',
+    /// the Canvas Scaler UI Scale Mode can be set to Constant Pixel Size, Scale With Screen Size, or Constant Physical Size.
     ///
-    /// Using the Constant Pixel Size mode, positions and sizes of UI elements are specified in pixels on the screen. This is also the default functionality of the Canvas when no Canvas Scaler is attached. However, With the Scale Factor setting in the Canvas Scaler, a constant scaling can be applied to all UI elements in the Canvas.
+    /// Using the Constant Pixel Size mode,（固定UI缩放值）
+    /// positions and sizes of UI elements are specified in pixels on the screen.
+    /// This is also the default functionality of the Canvas when no Canvas Scaler is attached.
+    /// However, With the Scale Factor setting in the Canvas Scaler, a constant scaling can be applied to all UI elements in the Canvas.
     ///
-    /// Using the Scale With Screen Size mode, positions and sizes can be specified according to the pixels of a specified reference resolution. If the current screen resolution is larger than the reference resolution, the Canvas will keep having only the resolution of the reference resolution, but will scale up in order to fit the screen. If the current screen resolution is smaller than the reference resolution, the Canvas will similarly be scaled down to fit. If the current screen resolution has a different aspect ratio than the reference resolution, scaling each axis individually to fit the screen would result in non-uniform scaling, which is generally undesirable. Instead of this, the ReferenceResolution component will make the Canvas resolution deviate from the reference resolution in order to respect the aspect ratio of the screen. It is possible to control how this deviation should behave using the ::ref::screenMatchMode setting.
+    /// reference resolution --> 参考分辨率，即一开始制作时选定的屏幕分辨率，后面的选项参数都是根据它来计算的。
+    /// Using the Scale With Screen Size mode,
+    /// positions and sizes can be specified according to the pixels of a specified reference resolution.
+    /// (1) If the current screen resolution is larger than the reference resolution,
+    ///     the Canvas will keep having only the resolution of the reference resolution, but will scale up in order to fit the screen.
+    /// (2) If the current screen resolution is smaller than the reference resolution,
+    ///     the Canvas will similarly be scaled down to fit.
+    /// (3) If the current screen resolution has a different aspect ratio than the reference resolution,
+    ///     scaling each axis individually to fit the screen would result in non-uniform scaling, which is generally undesirable.
+    /// Instead of this, the Reference Resolution component will make the Canvas resolution deviate
+    /// from the reference resolution in order to respect the aspect ratio of the screen.
+    /// It is possible to control how this deviation should behave using the ::ref::screenMatchMode setting.
     ///
-    /// Using the Constant Physical Size mode, positions and sizes of UI elements are specified in physical units, such as millimeters, points, or picas. This mode relies on the device reporting its screen DPI correctly. You can specify a fallback DPI to use for devices that do not report a DPI.
+    /// Using the Constant Physical Size mode,
+    /// positions and sizes of UI elements are specified in physical units such as millimeters, points, or picas.
+    /// This mode relies on the device reporting its screen DPI correctly.
+    /// You can specify a fallback DPI to use for devices that do not report a DPI.
     ///
     /// For a Canvas set to 'World Space' the Canvas Scaler can be used to control the pixel density of UI elements in the Canvas.
     /// </remarks>
@@ -69,10 +91,6 @@ namespace UnityEngine.UI
         /// <summary>
         /// Scales all UI elements in the Canvas by this factor.
         /// </summary>
-
-        /// <summary>
-        /// Scales all UI elements in the Canvas by this factor.
-        /// </summary>
         public float scaleFactor { get { return m_ScaleFactor; } set { m_ScaleFactor = Mathf.Max(0.01f, value); } }
 
         /// Scale the canvas area with the width as reference, the height as reference, or something in between.
@@ -102,7 +120,9 @@ namespace UnityEngine.UI
         /// The resolution the UI layout is designed for.
         /// </summary>
         /// <remarks>
-        /// If the screen resolution is larger, the UI will be scaled up, and if it's smaller, the UI will be scaled down. This is done in accordance with the Screen Match Mode.
+        /// If the screen resolution is larger, the UI will be scaled up,
+        /// and if it's smaller, the UI will be scaled down.
+        /// This is done in accordance with the Screen Match Mode.
         /// </remarks>
         public Vector2 referenceResolution
         {
@@ -136,7 +156,8 @@ namespace UnityEngine.UI
         /// Setting to scale the Canvas to match the width or height of the reference resolution, or a combination.
         /// </summary>
         /// <remarks>
-        /// If the setting is set to 0, the Canvas is scaled according to the difference between the current screen resolution width and the reference resolution width. If the setting is set to 1, the Canvas is scaled according to the difference between the current screen resolution height and the reference resolution height.
+        /// If the setting is set to 0, the Canvas is scaled according to the difference between the current screen resolution width and the reference resolution width.
+        /// If the setting is set to 1, the Canvas is scaled according to the difference between the current screen resolution height and the reference resolution height.
         ///
         /// For values in between 0 and 1, the scaling is based on a combination of the relative width and height.
         ///
@@ -162,25 +183,30 @@ namespace UnityEngine.UI
         {
             /// <summary>
             /// Use centimeters.
+            /// 厘米
             /// A centimeter is 1/100 of a meter
             /// </summary>
             Centimeters,
             /// <summary>
             /// Use millimeters.
+            /// 毫米
             /// A millimeter is 1/10 of a centimeter, and 1/1000 of a meter.
             /// </summary>
             Millimeters,
             /// <summary>
             /// Use inches.
+            /// 英寸
             /// </summary>
             Inches,
             /// <summary>
             /// Use points.
+            /// 1/72英寸
             /// One point is 1/12 of a pica, and 1/72 of an inch.
             /// </summary>
             Points,
             /// <summary>
             /// Use picas.
+            /// 1/6英寸
             /// One pica is 1/6 of an inch.
             /// </summary>
             Picas
