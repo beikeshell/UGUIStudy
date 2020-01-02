@@ -12,24 +12,36 @@ namespace UnityEngine.EventSystems
     /// </summary>
     /// <remarks>
     /// The EventSystem is responsible for processing and handling events in a Unity scene.
-    /// A scene should only contain one EventSystem.
+    /// NOTE: A scene should only contain one EventSystem.
+    /// EventSystem与许多模块结合使用，并且大多数情况下仅保留状态并将功能委托给特定的可覆盖的组件。
     /// The EventSystem works in conjunction with a number of modules and mostly just holds state and delegates functionality to specific,
     /// overrideable components.
-    /// When the EventSystem is started it searches for any BaseInputModules attached to the same GameObject and adds them to an internal list.
-    /// On update each attached module receives an UpdateModules call, where the module can modify internal state.
-    /// After each module has been Updated the active module has the Process call executed.
+    ///
+    /// When the EventSystem is started it searches for any BaseInputModules attached to the SAME GameObject and adds them to an internal list.
+    /// On update each attached module receives an UpdateModule call, where the module can modify internal state.
+    ///
+    /// After each module has been Updated, the active module has the Process call executed.
     /// This is where custom module processing can take place.
+    ///
+    /// Unity的UI系统中，EventSystem负责管理调度事件，控制各输入模块、射线投射以及事件动作的执行。
+    /// UI的事件系统处理用户的交互动作，通过BaseInput来获取用户输入的信息和状态，通过InputModule处理输入，产生和发送事件，
+    /// 通过RayCaster判断和选择需要响应交互事件的对象，最终由ExecuteEvents执行响应的动作，调用EventSystemHandler，以完成交互。
     /// </remarks>
+    ///
+    /// 单例
     public class EventSystem : UIBehaviour
     {
+        // 维护了一个列表，处于激活状态的输入模块。BaseInputModule是输入模块的基类，衍生类有TouchInputModule和StandaloneInputModule。
         private List<BaseInputModule> m_SystemInputModules = new List<BaseInputModule>();
 
+        //当前正在响应的输入模块，私有方法ChangeEventModule会更新和改变此成员
         private BaseInputModule m_CurrentInputModule;
 
         private  static List<EventSystem> m_EventSystems = new List<EventSystem>();
 
         /// <summary>
         /// Return the current EventSystem.
+        /// EventSystem的全局单例
         /// </summary>
         public static EventSystem current
         {
@@ -46,6 +58,9 @@ namespace UnityEngine.EventSystems
             }
         }
 
+        /// <summary>
+        /// 首个选中的对象，在StandaloneInputModule中会用到
+        /// </summary>
         [SerializeField]
         [FormerlySerializedAs("m_Selected")]
         private GameObject m_FirstSelected;
@@ -74,6 +89,8 @@ namespace UnityEngine.EventSystems
             set { m_DragThreshold = value; }
         }
 
+        // 当前选中的对象，可由各个输入模块调用EventSystem的SetSelectedGameObject方法来更新和改变此成员。
+        // 在执行事件的动作时以此成员为对象，即ExecuteEvents.Execute(m_CurrentSelected, ...)
         private GameObject m_CurrentSelected;
 
         /// <summary>
@@ -125,6 +142,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Recalculate the internal list of BaseInputModules.
+        /// 当输入模块的激活状态改变时（OnEnable或OnDisable）会调用此函数来更新EventSystem中管理的输入模块的列表。
         /// </summary>
         public void UpdateModules()
         {
@@ -138,10 +156,12 @@ namespace UnityEngine.EventSystems
             }
         }
 
+        // 用于标记选择对象时标记。
+        // 用在下面的SetSelectedGameObject方法和Selectable类的Select方法中
         private bool m_SelectionGuard;
 
         /// <summary>
-        /// Returns true if the EventSystem is already in a SetSelectedGameObject.
+        /// Returns true if the EventSystem is already in a SetSelected GameObject.
         /// </summary>
         public bool alreadySelecting
         {
@@ -150,6 +170,8 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Set the object as selected. Will send an OnDeselect the the old selected object and OnSelect to the new selected object.
+        /// 设置当前选中的对象。还有一个重载方法void SetSelectedGameObject(GameObject selected)。
+        /// 此方法会被一些衍生自Selectable的类直接调用，指定当前响应事件的对象。
         /// </summary>
         /// <param name="selected">GameObject to select.</param>
         /// <param name="pointer">Associated EventData.</param>
@@ -175,6 +197,7 @@ namespace UnityEngine.EventSystems
             m_SelectionGuard = false;
         }
 
+        // 一份伪造的BaseEventData假数据
         private BaseEventData m_DummyData;
         private BaseEventData baseEventDataCache
         {
@@ -221,6 +244,8 @@ namespace UnityEngine.EventSystems
                 if (lhsEventCamera != null && rhsEventCamera != null && lhsEventCamera.depth != rhsEventCamera.depth)
                 {
                     // need to reverse the standard compareTo
+                    // lhsEventCamera.depth 摄像机渲染顺序，低深度摄像机在高深度摄像机之前渲染
+                    // Use this to control the order in which cameras are drawn if you have multiple cameras and some of them don't cover the full screen.
                     if (lhsEventCamera.depth < rhsEventCamera.depth)
                         return 1;
                     if (lhsEventCamera.depth == rhsEventCamera.depth)
@@ -328,12 +353,14 @@ namespace UnityEngine.EventSystems
             return m_CurrentInputModule.IsPointerOverGameObject(pointerId);
         }
 
+        // OnEnable中把自己加入到静态事件系统列表中
         protected override void OnEnable()
         {
             base.OnEnable();
             m_EventSystems.Add(this);
         }
 
+        // OnDisable中把自己从静态时间系统列表中删除（如果m_CurrentInputModule不为null，则调用其DeactivateModule方法）
         protected override void OnDisable()
         {
             if (m_CurrentInputModule != null)
@@ -347,6 +374,8 @@ namespace UnityEngine.EventSystems
             base.OnDisable();
         }
 
+        //在Update中调用，每帧刷新
+        //遍历m_SystemInputModules列表，调用InputModule的UpdateModule方法
         private void TickModules()
         {
             for (var i = 0; i < m_SystemInputModules.Count; i++)
@@ -361,6 +390,11 @@ namespace UnityEngine.EventSystems
             m_HasFocus = hasFocus;
         }
 
+        //每帧更新
+        //做三件事情：
+        //（1）在TickModules函数中遍历所有可用InputModule，并调用其UpdateModule方法
+        //（2）检查输入模块是否发生变化。遍历InputModule列表，找到第一个可用（被支持且应当被激活）的InputModule，设置m_CurrentInputModule
+        //（3）调用当前InputModule的Process处理函数
         protected virtual void Update()
         {
             if (current != this)
@@ -397,10 +431,13 @@ namespace UnityEngine.EventSystems
                 }
             }
 
+            // 输入模块没有发生变化
             if (!changedModule && m_CurrentInputModule != null)
                 m_CurrentInputModule.Process();
         }
 
+        // 切换InputModule
+        // 做了两件事情：（1）调用前一个InputModule的DeactivateModule函数（2）调用当前InputModule的ActivateModule函数
         private void ChangeEventModule(BaseInputModule module)
         {
             if (m_CurrentInputModule == module)
@@ -411,6 +448,7 @@ namespace UnityEngine.EventSystems
 
             if (module != null)
                 module.ActivateModule();
+
             m_CurrentInputModule = module;
         }
 
