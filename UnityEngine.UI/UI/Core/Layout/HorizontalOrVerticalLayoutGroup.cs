@@ -84,6 +84,16 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Calculate the layout element properties for this layout element along the given axis.
+        /// (1) 第一个要注意的点就是参数，axis表示调用该方法是为了计算更新水平方向0还是竖直方向1的输入参数，而isVertical这是指当前的Layout是为了控制水平方向false还是竖直方向true；
+        /// (2) 函数内部，首先是获取padding值，是否控制子节点尺寸，是否控制子节点间隔；
+        /// (3) 初始化totalMin，totalPreferred和totalFlexible三个值；
+        /// (4) 获取alongOtherAxis，axis和isVertical表示的方向不相同时，此值为true；
+        /// (5) 遍历rectChildren（即之前基类中的m_RectChildren），使用GetChildSizes获取三个out参数min，preferred和flexible。
+        /// (6) 接下来会用到一个spacing参数，是一开始指定好的：
+        /// (7) 根据计算的方向与Layout自身控制的方向是否一致来更新totalMin，totalPreferred和totalFlexible；如果方向是一致的，那么三个totalXxx的值都要加上当前遍历的子节点的这三个值（及spacing）；
+        /// (8) 遍历结束后，如果计算方向与Layout控制的方向一致，且子元素数量大于0，则减去一次spacing；
+        /// (9) 对totalPreferred进行修正，应当不小于totalMin；
+        /// (10) 最后把计算得出的参数赋值给LayoutGroup中的三个Vector2成员
         /// </summary>
         /// <param name="axis">The axis to calculate for. 0 is horizontal and 1 is vertical.</param>
         /// <param name="isVertical">Is this group a vertical group?</param>
@@ -221,6 +231,18 @@ namespace UnityEngine.UI
             }
         }
 
+        /// <summary>
+        /// 主要是分了两种情况，是否controlSize，如果是false，那么就取子节点真实的尺寸，min即是sizeDelta对应维度的值，preferred同min，flexible为0；
+        /// 如果是true，情况就比较复杂了。这里把获取这三个尺寸的逻辑封装到了LayoutUtility的静态方法里。
+        /// 最后注意的一点就是，如果childForceExpand，flexible会取到一个最大为1的值（这里应该就是把它设置为正数）。
+        /// </summary>
+        /// <param name="child"></param>
+        /// <param name="axis"></param>
+        /// <param name="controlSize"></param>
+        /// <param name="childForceExpand"></param>
+        /// <param name="min"></param>
+        /// <param name="preferred"></param>
+        /// <param name="flexible"></param>
         private void GetChildSizes(RectTransform child, int axis, bool controlSize, bool childForceExpand,
             out float min, out float preferred, out float flexible)
         {

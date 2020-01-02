@@ -229,6 +229,8 @@ namespace UnityEngine.UI
             return count;
         }
 
+        /// 优先重建ParentCount值小的LayoutRebuilder，即在场景树上更靠近根节点的LayoutGroup。
+        /// CanvasUpdateRegistry调用各rebuilder的Rebuild方法来执行重建动作
         private static int SortLayoutList(ICanvasElement x, ICanvasElement y)
         {
             Transform t1 = x.transform;

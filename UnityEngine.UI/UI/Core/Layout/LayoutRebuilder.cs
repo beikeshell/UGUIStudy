@@ -88,6 +88,7 @@ namespace UnityEngine.UI
                     // but each tree have to be fully iterated before going to the next action,
                     // so reusing the results would entail storing results in a Dictionary or similar,
                     // which is probably a bigger overhead than performing GetComponents multiple times.
+                    //
                     PerformLayoutCalculation(m_ToRebuild, e => (e as ILayoutElement).CalculateLayoutInputHorizontal());
                     PerformLayoutControl(m_ToRebuild, e => (e as ILayoutController).SetLayoutHorizontal());
                     PerformLayoutCalculation(m_ToRebuild, e => (e as ILayoutElement).CalculateLayoutInputVertical());
@@ -162,6 +163,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Mark the given RectTransform as needing it's layout to be recalculated during the next layout pass.
+        /// 传入的rect开始，自下而上寻找，直到找到根部的LayoutGroup（即该LayoutGroup没有直接的父级LayoutGroup控制）
         /// </summary>
         /// <param name="rect">Rect to rebuild.</param>
         public static void MarkLayoutForRebuild(RectTransform rect)

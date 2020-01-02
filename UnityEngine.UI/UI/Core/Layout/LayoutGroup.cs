@@ -10,6 +10,26 @@ namespace UnityEngine.UI
     [RequireComponent(typeof(RectTransform))]
     /// <summary>
     /// Abstract base class to use for layout groups.
+    ///
+    /// 自动布局相关几乎所有的类都会继承或间接继承ILayoutElement，从而成为自动布局系统的一部分，
+    /// 可以调用CalculateLayoutInputXxx()计算并更新各参数，如minWidth、preferredWidth等，
+    /// 从而获取到其在自动布局过程中所需要的输入参数。另一个重要的接口是ILayoutController，
+    /// 它提供了组件用于控制其子元素自动布局的方法SetLayoutHorizontal()和SetLayoutVertical()。
+    ///
+    /// 自动布局系统中涉及到的主要的类和抽象类如下：
+    /// (1) public abstract class LayoutGroup : UIBehaviour, ILayoutElement, ILayoutGroup
+    /// (2) public class LayoutElement : UIBehaviour, ILayoutElement, ILayoutIgnorer
+    /// (3) public abstract class HorizontalOrVerticalLayoutGroup : LayoutGroup
+    /// (4) public class GridLayoutGroup : LayoutGroup
+    /// (5) public class HorizontalLayoutGroup : HorizontalOrVerticalLayoutGroup
+    /// (6) public class VerticalLayoutGroup : HorizontalOrVerticalLayoutGroup
+    ///
+    /// LayoutGroup是自动布局的抽象基类，LayoutElement是自动布局控制的元素的基类，其它的都是衍生自LayoutGroup的类，
+    /// 如我们在Unity中常用的HorizontalLayoutGroup等。
+    ///
+    /// LayoutGroup是各种自动布局的基类。在UGUI的使用中，编辑器或者运行时，对于一个LayoutGroup，
+    /// 当激活它、调整它的RectTransform、增删它的子节点时，都会触发它的子节点的自动布局重建动作。
+
     /// </summary>
     public abstract class LayoutGroup : UIBehaviour, ILayoutElement, ILayoutGroup
     {
@@ -196,7 +216,7 @@ namespace UnityEngine.UI
             float requiredSpace = requiredSpaceWithoutPadding + (axis == 0 ? padding.horizontal : padding.vertical);
             float availableSpace = rectTransform.rect.size[axis];
             float surplusSpace = availableSpace - requiredSpace;
-            
+
             float alignmentOnAxis = GetAlignmentOnAxis(axis);
             return (axis == 0 ? padding.left : padding.top) + surplusSpace * alignmentOnAxis;
         }
@@ -332,6 +352,7 @@ namespace UnityEngine.UI
         protected override void OnRectTransformDimensionsChange()
         {
             base.OnRectTransformDimensionsChange();
+            // 注意OnRectTransformDimensionsChange中有一个isRootLayoutGroup的属性判断。只有该LayoutGroup没有受控于父节点的ILayoutGroup时才会触发SetDirty。
             if (isRootLayoutGroup)
                 SetDirty();
         }
@@ -356,6 +377,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Mark the LayoutGroup as dirty.
+        ///
         /// </summary>
         protected void SetDirty()
         {
@@ -368,6 +390,7 @@ namespace UnityEngine.UI
                 StartCoroutine(DelayedSetDirty(rectTransform));
         }
 
+        // 协程方法。在下一帧调用LayoutRebuilder.MarkLayoutForRebuild(rectTransform)。
         IEnumerator DelayedSetDirty(RectTransform rectTransform)
         {
             yield return null;
