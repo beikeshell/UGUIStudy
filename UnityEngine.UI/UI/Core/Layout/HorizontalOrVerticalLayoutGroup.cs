@@ -17,9 +17,9 @@ namespace UnityEngine.UI
         public float spacing { get { return m_Spacing; } set { SetProperty(ref m_Spacing, value); } }
 
         [SerializeField] protected bool m_ChildForceExpandWidth = true;
-
         /// <summary>
         /// Whether to force the children to expand to fill additional available horizontal space.
+        /// 是否强制孩子扩展以填充其他可用的水平空间
         /// </summary>
         public bool childForceExpandWidth { get { return m_ChildForceExpandWidth; } set { SetProperty(ref m_ChildForceExpandWidth, value); } }
 
@@ -27,30 +27,44 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Whether to force the children to expand to fill additional available vertical space.
+        /// 是否强制孩子扩展以填充其他可用的垂直空间
         /// </summary>
         public bool childForceExpandHeight { get { return m_ChildForceExpandHeight; } set { SetProperty(ref m_ChildForceExpandHeight, value); } }
 
         [SerializeField] protected bool m_ChildControlWidth = true;
 
         /// <summary>
-        /// Returns true if the Layout Group controls the widths of its children. Returns false if children control their own widths.
+        /// Returns true if the Layout Group controls the widths of its children.
+        /// Returns false if children control their own widths.
         /// </summary>
         /// <remarks>
-        /// If set to false, the layout group will only affect the positions of the children while leaving the widths untouched. The widths of the children can be set via the respective RectTransforms in this case.
+        /// If set to false, the layout group will only affect the positions of the children while leaving the widths untouched.
+        /// The widths of the children can be set via the respective RectTransforms in this case.
+        /// 如果设置为false，则布局组将仅影响子项的位置，而宽度保持不变。 在这种情况下，可以通过相应的RectTransforms设置子项的宽度。
         ///
-        /// If set to true, the widths of the children are automatically driven by the layout group according to their respective minimum, preferred, and flexible widths. This is useful if the widths of the children should change depending on how much space is available.In this case the width of each child cannot be set manually in the RectTransform, but the minimum, preferred and flexible width for each child can be controlled by adding a LayoutElement component to it.
+        /// If set to true, the widths of the children are automatically driven by the layout group according to
+        /// their respective minimum, preferred, and flexible widths.
+        /// This is useful if the widths of the children should change depending on how much space is available.
+        /// In this case the width of each child cannot be set manually in the RectTransform,
+        /// BUT the minimum, preferred and flexible width for each child can be controlled by adding a LayoutElement component to it.
         /// </remarks>
         public bool childControlWidth { get { return m_ChildControlWidth; } set { SetProperty(ref m_ChildControlWidth, value); } }
 
         [SerializeField] protected bool m_ChildControlHeight = true;
 
         /// <summary>
-        /// Returns true if the Layout Group controls the heights of its children. Returns false if children control their own heights.
+        /// Returns true if the Layout Group controls the heights of its children.
+        /// Returns false if children control their own heights.
         /// </summary>
         /// <remarks>
-        /// If set to false, the layout group will only affect the positions of the children while leaving the heights untouched. The heights of the children can be set via the respective RectTransforms in this case.
+        /// If set to false, the layout group will only affect the positions of the children while leaving the heights untouched.
+        /// The heights of the children can be set via the respective RectTransforms in this case.
         ///
-        /// If set to true, the heights of the children are automatically driven by the layout group according to their respective minimum, preferred, and flexible heights. This is useful if the heights of the children should change depending on how much space is available.In this case the height of each child cannot be set manually in the RectTransform, but the minimum, preferred and flexible height for each child can be controlled by adding a LayoutElement component to it.
+        /// If set to true, the heights of the children are automatically driven by the layout group according to
+        /// their respective minimum, preferred, and flexible heights.
+        /// This is useful if the heights of the children should change depending on how much space is available.
+        /// In this case the height of each child cannot be set manually in the RectTransform,
+        /// BUT the minimum, preferred and flexible height for each child can be controlled by adding a LayoutElement component to it.
         /// </remarks>
         public bool childControlHeight { get { return m_ChildControlHeight; } set { SetProperty(ref m_ChildControlHeight, value); } }
 
@@ -165,7 +179,8 @@ namespace UnityEngine.UI
             {
                 // pos表示第一个子节点（即将放置的子节点）的起始位置，后边遍历的过程中这个值会逐渐递增
                 float pos = (axis == 0 ? padding.left : padding.top);
-                // itemFlexibleMultiplier表示如果LayoutGroup尺寸真的比preferred更大时，将对各子节点的尺寸方法的系数（前提是子节点的flexible为正数）
+                // itemFlexibleMultiplier表示如果LayoutGroup尺寸真的比preferred更大时，
+                // 将对各子节点的尺寸方法的系数（前提是子节点的flexible为正数）
                 float itemFlexibleMultiplier = 0;
                 float surplusSpace = size - GetTotalPreferredSize(axis);
 
