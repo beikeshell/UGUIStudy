@@ -130,6 +130,7 @@ namespace UnityEngine.UI
             ListPool<Component>.Release(components);
         }
 
+
         private void PerformLayoutCalculation(RectTransform rect, UnityAction<Component> action)
         {
             if (rect == null)
@@ -142,6 +143,8 @@ namespace UnityEngine.UI
             // If there are no controllers on this rect we can skip this entire sub-tree
             // We don't need to consider controllers on children deeper in the sub-tree either,
             // since they will be their own roots.
+            // 上面这段注释是有问题的。
+            // 如果当前rect包含有ILayoutElement元素或者本身就是ILayoutGroup，那么需要继续往下递归遍历，否则什么也不做
             if (components.Count > 0  || rect.GetComponent(typeof(ILayoutGroup)))
             {
                 // Layout calculations needs to executed bottom up with children being done before their parents,
@@ -206,7 +209,7 @@ namespace UnityEngine.UI
             ListPool<Component>.Release(comps);
         }
 
-        
+
         private static bool ValidController(RectTransform layoutRoot, List<Component> comps)
         {
             if (layoutRoot == null || layoutRoot.gameObject == null)
