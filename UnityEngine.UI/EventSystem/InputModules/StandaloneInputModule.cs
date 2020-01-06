@@ -280,7 +280,7 @@ namespace UnityEngine.EventSystems
         }
 
         /// <summary>
-        /// 在EventSystem Update中每帧调用
+        /// 在EventSystem Update中每帧调用,包含了绝大多数的逻辑
         /// </summary>
         public override void Process()
         {
@@ -307,6 +307,10 @@ namespace UnityEngine.EventSystems
             }
         }
 
+        /// <summary>
+        /// 遍历所有的触摸，如果touch.type不为Indirect（间接）（这一状态是由更底层的api获取到的），则继续处理，做一些事情，最后返回当前点击数。
+        /// </summary>
+        /// <returns></returns>
         private bool ProcessTouchEvents()
         {
             for (int i = 0; i < input.touchCount; ++i)

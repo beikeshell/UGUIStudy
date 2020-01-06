@@ -137,6 +137,10 @@ namespace UnityEngine.EventSystems
             return PointerEventData.FramePressState.NotChanged;
         }
 
+
+        /// <summary>
+        /// 对MouseButtonEventData的进一步封装。内部包含了一个鼠标按键的id InputButton 和一个MouseButtonEventData 。
+        /// </summary>
         protected class ButtonState
         {
             private PointerEventData.InputButton m_Button = PointerEventData.InputButton.Left;
@@ -156,6 +160,9 @@ namespace UnityEngine.EventSystems
             private MouseButtonEventData m_EventData;
         }
 
+        /// <summary>
+        /// 一个BottomState list
+        /// </summary>
         protected class MouseState
         {
             private List<ButtonState> m_TrackedButtons = new List<ButtonState>();
@@ -210,6 +217,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Information about a mouse button event.
+        /// 对PointerEventData的封装，表示鼠标按键事件数据
         /// </summary>
         public class MouseButtonEventData
         {
