@@ -341,11 +341,15 @@ namespace UnityEngine.EventSystems
         /// This method is called by Unity whenever a touch event is processed.
         /// Override this method with a custom implementation to process touch events yourself.
         /// </summary>
-        /// <param name="pointerEvent">Event data relating to the touch event, such as position and ID to be passed to the touch event destination object.</param>
-        /// <param name="pressed">This is true for the first frame of a touch event, and false thereafter. This can therefore be used to determine the instant a touch event occurred.</param>
+        /// <param name="pointerEvent">Event data relating to the touch event,
+        /// such as position and ID to be passed to the touch event destination object.</param>
+        /// <param name="pressed">This is true for the first frame of a touch event, and false thereafter.
+        /// This can therefore be used to determine the instant a touch event occurred.</param>
         /// <param name="released">This is true only for the last frame of a touch event.</param>
         /// <remarks>
         /// This method can be overridden in derived classes to change how touch press events are handled.
+        ///
+        /// 获取了点击事件数据后，紧接着会调用ProcessTouchPress，处理按下和释放
         /// </remarks>
         protected void ProcessTouchPress(PointerEventData pointerEvent, bool pressed, bool released)
         {
@@ -354,7 +358,8 @@ namespace UnityEngine.EventSystems
             // PointerDown notification
             //初始化pointerEvent；
             //处理enter和exit事件，清除旧的选择对象selected，更新新的选择对象，并在HandlePointerExitAndEnter(...)中触发enter和exit的事件；
-            //处理pointerDown的事件，这里使用的是ExecuteHierarchy，即会对从当前对象所在的树状结构中自下而上第一个可以响应该事件的对象执行该事件，后边讲到ExecuteEvents时还会再提到；
+            //处理pointerDown的事件，这里使用的是ExecuteHierarchy，即会对从当前对象所在的树状结构中自下而上第一个可以响应该事件的对象执行该事件，
+            //    后边讲到ExecuteEvents时还会再提到；
             //如果没有对象响应pointerDown，则会尝试执行click事件，也是会自下而上找一遍；
             //如果响应pointerDown的对象newPressed与上一帧的是同一对象，则处理连续点击的逻辑，竟然有一个写死的0.3f，然后是更新数据；
             //最后执行一个初始化潜在拖拽的事件；

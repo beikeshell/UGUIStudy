@@ -119,6 +119,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Return the first valid RaycastResult.
+        /// 找到第一个有效的RaycastResult
         /// </summary>
         protected static RaycastResult FindFirstRaycast(List<RaycastResult> candidates)
         {

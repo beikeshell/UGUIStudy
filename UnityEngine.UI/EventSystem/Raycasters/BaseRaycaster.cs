@@ -5,6 +5,9 @@ namespace UnityEngine.EventSystems
 {
     /// <summary>
     /// Base class for any RayCaster.
+    /// Raycaster的职责是向场景中的对象投射射线以判断光标是否在其上方.
+    /// 在Unity中，Raycaster系统用于当事件发生时筛选和确定事件的接收对象。
+    /// 对于指定的屏幕坐标点，使用射线投射可以取到【所有】位于该坐标点之下的对象并得出其中【最靠近屏幕】的一个。
     /// </summary>
     /// <remarks>
     /// A Raycaster is responsible for raycasting against scene elements to determine if the cursor is over them.
@@ -17,6 +20,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Raycast against the scene.
+        /// 执行射线投射的方法
         /// </summary>
         /// <param name="eventData">Current event data.</param>
         /// <param name="resultAppendList">List of hit Objects.</param>
@@ -24,6 +28,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The camera that will generate rays for this raycaster.
+        /// 用于产生射线的事件摄像机
         /// </summary>
         public abstract Camera eventCamera { get; }
 
@@ -75,12 +80,18 @@ namespace UnityEngine.EventSystems
                 "renderOrderPriority: " + renderOrderPriority;
         }
 
+        /// <summary>
+        /// 在OnEnable()和OnDisable()中，Raycaster会把自己从RaycasterManager管理的一个列表中添加/移除。
+        /// </summary>
         protected override void OnEnable()
         {
             base.OnEnable();
             RaycasterManager.AddRaycaster(this);
         }
 
+        /// <summary>
+        /// 在OnEnable()和OnDisable()中，Raycaster会把自己从RaycasterManager管理的一个列表中添加/移除。
+        /// </summary>
         protected override void OnDisable()
         {
             RaycasterManager.RemoveRaycasters(this);

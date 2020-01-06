@@ -33,6 +33,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Search the cache for currently active pointers, return true if found.
+        /// 根据id获取PointerEventData数据，并返回是否为新创建的数据
         /// </summary>
         /// <param name="id">Touch ID</param>
         /// <param name="data">Found data</param>
@@ -61,6 +62,7 @@ namespace UnityEngine.EventSystems
         }
 
         /// <summary>
+        /// GetTouchPointerEventData获取对应的PointerEventData，并且同时会取到其是否是按下或释放的状态。
         /// Given a touch populate the PointerEventData and return if we are pressed or released.
         /// 获取（产生）PointerEventData，判断其状态，并且要判断它是否是新创建的created，
         /// input.phase表示当前触摸事件位于的阶段（Began，Moved，Stationary，Ended和Canceled ，也是由底层的api获取的）。
@@ -99,6 +101,7 @@ namespace UnityEngine.EventSystems
             }
             else
             {
+                //进行射线投射计算
                 eventSystem.RaycastAll(pointerData, m_RaycastResultCache);
 
                 var raycast = FindFirstRaycast(m_RaycastResultCache);

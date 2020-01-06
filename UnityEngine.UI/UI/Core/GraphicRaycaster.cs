@@ -138,6 +138,9 @@ namespace UnityEngine.UI
             // RelativeMouseAt can be used to query relative mouse input coordinates and the screen in which Mouse Input is recorded.
             // This is only valid on the Windows Desktop platforms with Multiple Displays.
             // x, y returns the coordinates in relative space and z returns the screen in which Mouse Input is handled.
+
+            // Display.RelativeMouseAt(...)方法用于获取鼠标的相对位置，在PC平台下可能会有多个Display窗口，返回的z表示的是Display的id。
+            // 如果不支持多个Display则返回值的z为0，此时获取到的就是eventData.position；
             var eventPosition = Display.RelativeMouseAt(eventData.position);
             if (eventPosition != Vector3.zero)
             {
@@ -159,6 +162,8 @@ namespace UnityEngine.UI
             }
 
             // Convert to view space
+            // 获取正确的pos：将上一步的屏幕坐标eventPosition转换成ViewPort坐标pos，这里同样也处理了多Display的情况。
+            // 获取eventCamera不为null则直接调用相机的坐标转换方法ScreenToViewportPoint
             Vector2 pos;
             if (currentEventCamera == null)
             {
@@ -182,7 +187,10 @@ namespace UnityEngine.UI
                 return;
 
             // Distance from camera to target point.
-            // hitDistance表示相机到投射目标点的距离。后边会根据这个距离值筛选掉一部分Graphic
+            // 获取正确的hitDistance：这里分别处理blockingObjects 为不同的枚举值时的情况（默认值为None）。
+            // hitDistance表示相机到投射目标点的距离。后边会根据这个距离值筛选掉一部分Graphic；
+            // m_BlockingMask是LayerMask用于按层筛选投射目标；
+            // 这里的ReflectionMethodsCache.Singleton.raycast3D这样的方法实际上调用的就是Physics.Raycast(...)方法
             float hitDistance = float.MaxValue;
 
             Ray ray = new Ray();
