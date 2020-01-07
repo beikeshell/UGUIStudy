@@ -6,11 +6,13 @@ namespace UnityEngine.EventSystems
 {
     /// <summary>
     /// Each touch event creates one of these containing all the relevant information.
+    /// 每个触摸事件都会创建其中一个包含所有相关信息的PointerEventData。
     /// </summary>
     public class PointerEventData : BaseEventData
     {
         /// <summary>
         /// Input press tracking.
+        /// 表示鼠标哪个按键被按下了
         /// </summary>
         public enum InputButton
         {
@@ -32,6 +34,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The state of a press for the given frame.
+        /// 当前帧Button Press状态
         /// </summary>
         public enum FramePressState
         {
@@ -58,15 +61,18 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The object that received 'OnPointerEnter'.
+        /// 接收OnPointerEnter事件的游戏对象
         /// </summary>
         public GameObject pointerEnter { get; set; }
 
-        // The object that received OnPointerDown
+        // The object that received 'OnPointerDown'.
+        // 接收OnPointerDown事件的游戏对象
         private GameObject m_PointerPress;
 
         /// <summary>
         /// The raw GameObject for the last press event.
         /// This means that it is the 'pressed' GameObject even if it can not receive the press event itself.
+        /// 在更新m_PointerPress时，会将当前m_PointerPress赋值给lastPress
         /// </summary>
         public GameObject lastPress { get; private set; }
 
@@ -77,11 +83,13 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The object that is receiving 'OnDrag'.
+        /// 接收OnDrag事件的游戏对象
         /// </summary>
         public GameObject pointerDrag { get; set; }
 
         /// <summary>
         /// RaycastResult associated with the current event.
+        /// 当前事件的射线检测结果
         /// </summary>
         public RaycastResult pointerCurrentRaycast { get; set; }
 
@@ -179,6 +187,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Is a drag operation currently occuring.
+        /// 是否正在拖拽
         /// </summary>
         public bool dragging { get; set; }
 

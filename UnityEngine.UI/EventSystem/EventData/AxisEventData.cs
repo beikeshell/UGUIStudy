@@ -12,6 +12,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// MoveDirection for this event.
+        /// 移动方向：Left/Up/Right/Down/None
         /// </summary>
         public MoveDirection moveDir { get; set; }
 

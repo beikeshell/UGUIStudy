@@ -104,6 +104,7 @@ namespace UnityEngine.EventSystems
                 //进行射线投射计算
                 eventSystem.RaycastAll(pointerData, m_RaycastResultCache);
 
+                //FindFirstRaycast -> 找到第一个有效的RaycastResult
                 var raycast = FindFirstRaycast(m_RaycastResultCache);
                 pointerData.pointerCurrentRaycast = raycast;
                 m_RaycastResultCache.Clear();
@@ -322,6 +323,14 @@ namespace UnityEngine.EventSystems
             return data;
         }
 
+        /// <summary>
+        /// 是否开始拖拽
+        /// </summary>
+        /// <param name="pressPos"></param>
+        /// <param name="currentPos"></param>
+        /// <param name="threshold"></param>
+        /// <param name="useDragThreshold"></param>
+        /// <returns></returns>
         private static bool ShouldStartDrag(Vector2 pressPos, Vector2 currentPos, float threshold, bool useDragThreshold)
         {
             if (!useDragThreshold)
@@ -332,7 +341,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Process movement for the current frame with the given pointer event.
-        /// ProcessMove和ProcessDrag是触摸点击和鼠标点击公用的逻辑
+        /// ProcessMove和ProcessDrag是触摸点击和鼠标点击【公用】的逻辑
         /// </summary>
         protected virtual void ProcessMove(PointerEventData pointerEvent)
         {
@@ -342,6 +351,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Process the drag for the current frame with the given pointer event.
+        /// ProcessMove和ProcessDrag是触摸点击和鼠标点击【公用】的逻辑
         /// </summary>
         protected virtual void ProcessDrag(PointerEventData pointerEvent)
         {

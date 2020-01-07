@@ -105,7 +105,8 @@ namespace UnityEngine.EventSystems
         /// Delay in seconds before the input actions per second repeat rate takes effect.
         /// </summary>
         /// <remarks>
-        /// If the same direction is sustained, the inputActionsPerSecond property can be used to control the rate at which events are fired. However, it can be desirable that the first repetition is delayed, so the user doesn't get repeated actions by accident.
+        /// If the same direction is sustained, the inputActionsPerSecond property can be used to control the rate at which events are fired.
+        /// However, it can be desirable that the first repetition is delayed, so the user doesn't get repeated actions by accident.
         /// </remarks>
         public float repeatDelay
         {

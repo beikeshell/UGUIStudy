@@ -114,6 +114,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Process the current tick for the module.
+        /// 子类实现
         /// </summary>
         public abstract void Process();
 
@@ -171,6 +172,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Given 2 GameObjects, return a common root GameObject (or null).
+        /// 找到两个节点的共同根节点
         /// </summary>
         /// <param name="g1">GameObject to compare</param>
         /// <param name="g2">GameObject to compare</param>
@@ -200,10 +202,10 @@ namespace UnityEngine.EventSystems
         // (but not including the common root).
         /// <summary>
         ///整个过程分为几步：
-        /// - 如果没有新进入的对象，或者currentPointerData.pointerEnter是null，那么就不处理进入（Enter），只处理离开（Exit），
+        /// （1）- 如果没有新进入的对象，或者currentPointerData.pointerEnter是null，那么就不处理进入（Enter），只处理离开（Exit），
         ///   即对currentPointerData.hovered中的各个对象都执行离开的事件，并在最后确保将currentPointerData.pointerEnter设为null
-        /// - 如果对象没有变化，就是说即将进入的对象和当前事件数据中的进入对象是同一个对象，直接返回。
-        /// - 寻找当前事件数据中的进入对象currentPointerData.pointerEnter和即将要进入的对象newEnterTarget二者的共同父节点。
+        /// （2）- 如果对象没有变化，就是说即将进入的对象和当前事件数据中的进入对象是同一个对象，直接返回。
+        /// （3）- 寻找当前事件数据中的进入对象currentPointerData.pointerEnter和即将要进入的对象newEnterTarget二者的共同父节点。
         ///   然后如前边说的那样，从旧的进入对象到共有父节点，逐个执行离开事件，并从hovered中移除，此操作不含共有父节点；
         ///   接下来从新的进入对象到共有父节点，逐个执行进入事件，并将其加入hovered，此操作不包含共有父节点。
         /// </summary>
@@ -211,7 +213,7 @@ namespace UnityEngine.EventSystems
         /// <param name="newEnterTarget"></param>
         protected void HandlePointerExitAndEnter(PointerEventData currentPointerData, GameObject newEnterTarget)
         {
-            // if we have no target / pointerEnter has been deleted
+            // if we have no target or pointerEnter has been DELETED
             // just send exit events to anything we are tracking
             // then exit
             if (newEnterTarget == null || currentPointerData.pointerEnter == null)
@@ -270,6 +272,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Given some input data generate an AxisEventData that can be used by the event system.
+        /// 生成一个AxisEventData
         /// </summary>
         /// <param name="x">X movement.</param>
         /// <param name="y">Y movement.</param>
@@ -287,6 +290,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Generate a BaseEventData that can be used by the EventSystem.
+        /// 生成一个BaseEventData
         /// </summary>
         protected virtual BaseEventData GetBaseEventData()
         {

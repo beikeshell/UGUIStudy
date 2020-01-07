@@ -2,6 +2,7 @@ namespace UnityEngine.EventSystems
 {
     /// <summary>
     /// A hit result from a BaseRaycaster.
+    /// 射线检测结果结构体
     /// </summary>
     public struct RaycastResult
     {
