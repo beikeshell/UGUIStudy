@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+// https://blog.lujun.co/2019/07/20/unity_event_system_raycasters/
+
 namespace UnityEngine.EventSystems
 {
     [AddComponentMenu("Event/Standalone Input Module")]

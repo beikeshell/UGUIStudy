@@ -21,6 +21,7 @@ namespace UnityEngine.EventSystems
         /// <summary>
         /// Raycast against the scene.
         /// 执行射线投射的方法
+        /// 子类实现
         /// </summary>
         /// <param name="eventData">Current event data.</param>
         /// <param name="resultAppendList">List of hit Objects.</param>

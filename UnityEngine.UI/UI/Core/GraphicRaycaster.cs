@@ -10,6 +10,7 @@ namespace UnityEngine.UI
     [RequireComponent(typeof(Canvas))]
     /// <summary>
     /// A derived BaseRaycaster to raycast against Graphic elements.
+    /// GraphicRaycaster --> 用于处理UIelements，依存于一个Canvas并且会在Canvas内搜寻目标
     /// </summary>
     public class GraphicRaycaster : BaseRaycaster
     {
@@ -40,6 +41,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Priority of the raycaster based upon sort order.
+        /// 不同于 PhysicsRaycaster 和 Physics2DRaycaster 类中直接使用父类的 sortOrderPriority 方法和 renderOrderPriority，
+        /// GraphicRaycaster 覆写了这两个方法，并且当 Canvas 的 render mode 设置为 RenderMode.ScreenSpaceOverlay 时，
+        /// 上面两个方法分别返回 canvas 的 sortingOrder 以及 rootCanvas 的 renderOrder。
         /// </summary>
         /// <returns>
         /// The sortOrder priority.
@@ -74,9 +78,17 @@ namespace UnityEngine.UI
             }
         }
 
+        /// <summary>
+        /// 射线检测时是否忽略背向的 Graphics
+        /// </summary>
         [FormerlySerializedAs("ignoreReversedGraphics")]
         [SerializeField]
         private bool m_IgnoreReversedGraphics = true;
+
+
+        /// <summary>
+        /// 哪些类型的对象会阻挡 Graphic raycasts
+        /// </summary>
         [FormerlySerializedAs("blockingObjects")]
         [SerializeField]
         private BlockingObjects m_BlockingObjects = BlockingObjects.None;
@@ -89,6 +101,9 @@ namespace UnityEngine.UI
         public BlockingObjects blockingObjects { get {return m_BlockingObjects; } set { m_BlockingObjects = value; } }
 
         // m_BlockingMask是LayerMask用于按层筛选投射目标
+        /// <summary>
+        /// 哪些 Layer 会阻挡 Graphic raycasts(对 Blocked Objects 指定的对象生效)
+        /// </summary>
         [SerializeField]
         protected LayerMask m_BlockingMask = kNoEventMaskSet;
 
@@ -113,6 +128,10 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Perform the raycast against the list of graphics associated with the Canvas.
+        /// GraphicRaycaster内围绕复写的基类的Raycast方法来展开（注意在GraphicRaycaster内部有另一个名为Raycast的私有静态方法，不要搞混）。
+        ///
+        /// 整个函数代码很多，但是做的事情很简单，对于给定的PointerEventData，射线投射得出一些投射结果RaycastResult，
+        /// 追加到传入的参数List<RaycastResult>之后。
         /// </summary>
         /// <param name="eventData">Current event data</param>
         /// <param name="resultAppendList">List of hit objects to append new results to.</param>
@@ -121,6 +140,7 @@ namespace UnityEngine.UI
             if (canvas == null)
                 return;
 
+            // 获取当前 Canvas 下所有的 Graphic(canvasGraphics，这些 Graphics 在进行射线检测的时候会用到)。
             var canvasGraphics = GraphicRegistry.GetGraphicsForCanvas(canvas);
             if (canvasGraphics == null || canvasGraphics.Count == 0)
                 return;
@@ -149,6 +169,7 @@ namespace UnityEngine.UI
                 int eventDisplayIndex = (int)eventPosition.z;
 
                 // Discard events that are not part of this display so the user does not interact with multiple displays at once.
+                // 当平台支持 MultiDisplay 时，如果用户操作的不是当前的 Display，那么所有的其他 Display 上产生的事件都会被舍弃。
                 if (eventDisplayIndex != displayIndex)
                     return;
             }
@@ -202,6 +223,7 @@ namespace UnityEngine.UI
                 // Screen space is defined in pixels. The bottom-left of the screen is (0,0); the right-top is (pixelWidth -1,pixelHeight -1).
                 ray = currentEventCamera.ScreenPointToRay(eventPosition);
 
+            // Canvas renderMode 不为 RenderMode.ScreenSpaceOverlay 并且设置了 blockingObjects，此时就会 Blocked Objects 和 Blocked Mask 就会生效。
             if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && blockingObjects != BlockingObjects.None)
             {
                 float distanceToClipPlane = 100.0f;
@@ -219,6 +241,11 @@ namespace UnityEngine.UI
                     if (ReflectionMethodsCache.Singleton.raycast3D != null)
                     {
                         // ReflectionMethodsCache.Singleton.raycast3D这样的方法实际上调用的就是Physics.Raycast(...)
+                        // raycast3DAll 时指定了射线检测层 m_BlockingMask，这个参数就是自定义设定的 Blocking Mask，
+                        // 属于 block mask 的对象在这里就会就行射线检测，并得到最小的一个 hitDistance；
+                        // 后面对所有的 Graphics 进行射线检测时，如果检测结果 distance 大于 hitDistance，那么那个结果会被舍弃。
+                        // 如此一来，Blocking Mask 就起到了阻挡的作用，属于这个 layer 的所有对象的一旦被射线检测成功并得到 hitDistance，
+                        // PhysicsRaycaster 最后的射线检测结果都只会包含这个 hitDistance 距离以内的对象。
                         var hits = ReflectionMethodsCache.Singleton.raycast3DAll(ray, distanceToClipPlane, (int)m_BlockingMask);
                         if (hits.Length > 0)
                             hitDistance = hits[0].distance;
@@ -276,6 +303,8 @@ namespace UnityEngine.UI
                     else
                     {
                         // http://geomalgorithms.com/a06-_intersect-2.html
+                        // 计算 Graphic 和 Camera 之间的向量在 Graphic 正方向上的投影以及计算射线方向在 Graphic 正方向上的投影，
+                        // 两者相除就得到最终的 distance。
                         distance = (Vector3.Dot(transForward, trans.position - ray.origin) / Vector3.Dot(transForward, ray.direction));
 
                         // Check to see if the go is behind the camera.
@@ -339,10 +368,14 @@ namespace UnityEngine.UI
                 Graphic graphic = foundGraphics[i];
 
                 // -1 means it hasn't been processed by the canvas, which means it isn't actually drawn
+                // depth 为 -1 说明没有被 canvas 处理(未被绘制)
+                // raycastTarget 为 false 说明当前 graphic 不需要被射线检测
+                // graphic.canvasRenderer.cull 为 true，忽略当前 graphic 的 CanvasRender 渲染的物体
                 if (graphic.depth == -1 || !graphic.raycastTarget || graphic.canvasRenderer.cull)
                     continue;
 
                 // pointer位置不在graphic中
+                // 从指定的 eventCamera 计算 pointerPosition 是否在 graphic 的 Rectangle 区域内
                 if (!RectTransformUtility.RectangleContainsScreenPoint(graphic.rectTransform, pointerPosition, eventCamera))
                     continue;
 

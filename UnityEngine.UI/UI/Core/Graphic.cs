@@ -771,6 +771,31 @@ namespace UnityEngine.UI
         /// When a Graphic Raycaster is raycasting into the scene it does two things.
         /// First it filters the elements using their RectTransform rect.
         /// Then it uses this Raycast function to determine the elements hit by the raycast.
+        ///
+        /// 对 Canvas 下所有的 graphic 遍历，满足条件则进行射线检测。Graphic 射线检测过程如下:
+        ///     整个检测过程是在一个循环中实现的，从当前 Graphic 所在节点开始往祖先节点不断递归，
+        ///     直至向上再没有节点或者节点绑定的组件中有被射线检测出不合法而返回。
+        ///     对于节点对象，首先获取其绑定的所有组件，依次遍历判断组件:
+        ///         若组件不是 Canvas 或者是 其 Canvas 但是其属性 overrideSorting 为 false，此时的检测过程如下:
+        ///         判断组件是否是 ICanvasRaycastFilter，如不是则继续下一个组件判断；
+        ///         若是则调用 ICanvasRaycastFilter 的 IsRaycastLocationValid 方法判断事件发生位置相对这个节点对象是否是合法的，
+        ///         如果不合法直接跳出循环和遍历，Raycast 返回 false，表示用于检测的 Graphic 不需要接收此事件；
+        ///         若所有的组件检测都合法且 IsRaycastLocationValid 都则返回 true，则继续遍历下一个父节点对象。
+        ///     上一步的检测过程中，当节点遍历完成还没有返回那么就 Raycast 方法返回 true 表示用于检测的 Graphic 可以作为事件接收对象。
+        ///     另一种遍历完成的条件为当遍历到某个节点的某个组件，这个组件是 Canvas 并且其 overrideSorting 为 true，
+        ///     在这种情况下会将 continueTraversal 局部变量设置为 false 表示到这个节点遍历就可以完成了；
+        ///     当前这个节点的判断计算过程同第一步中相同: 在当前节点绑定的一系列实现了 ICanvasRaycastFilter 接口的组件上调用
+        ///     IsRaycastLocationValid 方法判断事件发生位置相对这个 Graphic 是否是合法的，如果不合法 Raycast 方法直接返回 false，
+        ///     表示当前 Graphic 不需要接收此事件，否则所有的组件检测都合法返回 true，表示当前 Graphic 需要作为事件接收对象。
+        ///     在上面对实现了 ICanvasRaycastFilter 接口的组件判断计算过程中，还会判断组件是否是 CanvasGroup。
+        ///     若是 CanvasGroup 且设置了 ignoreParentGroups 为 false，那么会调用 IsRaycastLocationValid 计算判断；
+        ///     若是 CanvasGroup 但是设置了 ignoreParentGroups 为 true，那么依旧会调用 IsRaycastLocationValid 计算判断一次，
+        ///     但是对接下来后面所有的 CanvasGroup 组件将不会调用 IsRaycastLocationValid 方法检测(忽略这些父 CanvasGrpup 的判断)；
+        ///     如果不是 CanvasGroup，直接调用 IsRaycastLocationValid 方法判断事件发生位置相对这个 Graphic 是否是合法的。
+        /// 从整个 Graphic.Raycast 检测过程可以看出，检测是自当前 graphic 所在节点开始，
+        /// 一旦检测到某个节点添加实现了 ICanvasRaycastFilter 接口且 IsRaycastLocationValid 方法返回 false
+        /// 则此 graphic 检测失败并结束检测；否则还会继续向上递归检测父节点，当所有节点(绑定了 Canvas 组件并设置了
+        /// Canvas.overrideSorting 为 true的节点会截止此次检测)都射线检测成功，则此次 Graphic.Raycast 成功。
         /// </summary>
         /// <param name="sp">Screen point being tested</param>
         /// <param name="eventCamera">Camera that is being used for the testing.</param>
