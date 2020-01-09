@@ -773,14 +773,14 @@ namespace UnityEngine.UI
         /// Then it uses this Raycast function to determine the elements hit by the raycast.
         ///
         /// 对 Canvas 下所有的 graphic 遍历，满足条件则进行射线检测。Graphic 射线检测过程如下:
-        ///     整个检测过程是在一个循环中实现的，从当前 Graphic 所在节点开始往祖先节点不断递归，
-        ///     直至向上再没有节点或者节点绑定的组件中有被射线检测出不合法而返回。
-        ///     对于节点对象，首先获取其绑定的所有组件，依次遍历判断组件:
-        ///         若组件不是 Canvas 或者是 其 Canvas 但是其属性 overrideSorting 为 false，此时的检测过程如下:
-        ///         判断组件是否是 ICanvasRaycastFilter，如不是则继续下一个组件判断；
-        ///         若是则调用 ICanvasRaycastFilter 的 IsRaycastLocationValid 方法判断事件发生位置相对这个节点对象是否是合法的，
-        ///         如果不合法直接跳出循环和遍历，Raycast 返回 false，表示用于检测的 Graphic 不需要接收此事件；
-        ///         若所有的组件检测都合法且 IsRaycastLocationValid 都则返回 true，则继续遍历下一个父节点对象。
+        /// 整个检测过程是在一个循环中实现的，从当前 Graphic 所在节点开始往祖先节点不断递归，
+        /// 直至向上再没有节点或者节点绑定的组件中有被射线检测出不合法而返回。
+        /// 对于节点对象，首先获取其绑定的所有组件，依次遍历判断组件:
+        /// ->若组件不是 Canvas 或者是 其 Canvas 但是其属性 overrideSorting 为 false，此时的检测过程如下:
+        ///   判断组件是否是 ICanvasRaycastFilter，如不是则继续下一个组件判断；
+        ///   若是则调用 ICanvasRaycastFilter 的 IsRaycastLocationValid 方法判断事件发生位置相对这个节点对象是否是合法的，
+        ///   如果不合法直接跳出循环和遍历，Raycast 返回 false，表示用于检测的 Graphic 不需要接收此事件；
+        ///   若所有的组件检测都合法且 IsRaycastLocationValid 都则返回 true，则继续遍历下一个父节点对象。
         ///     上一步的检测过程中，当节点遍历完成还没有返回那么就 Raycast 方法返回 true 表示用于检测的 Graphic 可以作为事件接收对象。
         ///     另一种遍历完成的条件为当遍历到某个节点的某个组件，这个组件是 Canvas 并且其 overrideSorting 为 true，
         ///     在这种情况下会将 continueTraversal 局部变量设置为 false 表示到这个节点遍历就可以完成了；

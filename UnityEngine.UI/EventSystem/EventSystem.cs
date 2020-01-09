@@ -239,6 +239,8 @@ namespace UnityEngine.EventSystems
         {
             if (lhs.module != rhs.module)
             {
+                // 首先比较两个对象的 Camera 的 depth。在渲染中，Camera depth 越小会越先渲染，越大越往后渲染，
+                // 因此对于射线检测来说，Camera 的 depth 越大，它对应的物体应该先于 Camera depth 小的物体进行射线检测，检测得到的结果也应排在前面。
                 var lhsEventCamera = lhs.module.eventCamera;
                 var rhsEventCamera = rhs.module.eventCamera;
                 if (lhsEventCamera != null && rhsEventCamera != null && lhsEventCamera.depth != rhsEventCamera.depth)
@@ -254,31 +256,66 @@ namespace UnityEngine.EventSystems
                     return -1;
                 }
 
+                // 当 Camera depth 相等的时候，使用 sortOrderPriority 进行比较。优先级数值越大，越先被射线检测选中，
+                // 所以这里的 CompareTo 方法使用的是右边的参数去比较左边的参数，最终的结果就是按照从大到小(降序)的顺序排列。
+                // 在 PhysicsRaycaster 和 Physics2DRaycaster 类中没有覆写 sortOrderPriority 方法，因此都返回基类的 int.MinValue；
+                // 但在 GraphicRaycaster 类中覆写了此方法，当对应的 Canvas 的 renderMode 设置为 RenderMode.ScreenSpaceOverlay 时，
+                // 此时的 sortOrderPriority 返回 Canvas 的 sortingOrder(Sort Order越大越在上层)，
+                // 否则同样也是返回基类设置的 int.MinValue，这是因为在 RenderMode.ScreenSpaceOverlay 模式下，所有的 distance 都将是 0。
                 if (lhs.module.sortOrderPriority != rhs.module.sortOrderPriority)
                     return rhs.module.sortOrderPriority.CompareTo(lhs.module.sortOrderPriority);
 
+                // 当 sortOrderPriority 相同，再使用 renderOrderPriority 比较。
+                // renderOrderPriority 和 sortOrderPriority 类似，仅在 GraphicRaycaster 类中被覆写，
+                // 也只有在 Canvas 的 renderMode 设置为 RenderMode.ScreenSpaceOverlay 时才返回 canvas.rootCanvas.renderOrder，
+                // 这是因为 Canvas 在其他几种 renderMode 下，渲染的先后顺序都和距离摄像机的距离有关。
+                // 所以 renderOrderPriority 比较也是按照从大到小的顺序得到最终的结果。
                 if (lhs.module.renderOrderPriority != rhs.module.renderOrderPriority)
                     return rhs.module.renderOrderPriority.CompareTo(lhs.module.renderOrderPriority);
             }
 
+            // 同属于一个 Raycaster 检测得到，但是它们的 sortingLayer 不一样
+            // - 对于 PhysicsRaycaster 检测得到的对象，sortingLayer 都为 0。
+            // - 对于 Physics2DRaycaster 检测得到的对象，如果对象上挂载有 SpriteRenderer 组件，那么 sortingLayer 对应的 sortingLayerID，否则也为 0。
+            // - 对于 GraphicRaycaster 检测所得，sortingLayer 就是所在 Canvas 的 sortingLayerID。
             if (lhs.sortingLayer != rhs.sortingLayer)
             {
                 // Uses the layer value to properly compare the relative order of the layers.
+                // 通过 SortingLayer.GetLayerValueFromID 方法计算 sortingLayer 最终的 sorting layer 值，同样是按照降序排列，
+                // 因此计算得到的 sorting layer 值越大越先排在前面。
                 var rid = SortingLayer.GetLayerValueFromID(rhs.sortingLayer);
                 var lid = SortingLayer.GetLayerValueFromID(lhs.sortingLayer);
                 return rid.CompareTo(lid);
             }
 
+            // sortingLayer 也相同，使用 sortingOrder 比较
+            // sortingOrder 和 sortingLayer 类似，PhysicsRaycaster 检测得到的对象 sortingOrder 为 0；
+            // Physics2DRaycaster 检测得到的对象是 SpriteRenderer 中的 sortingOrder；
+            // GraphicRaycaster 检测所得是所在 Canvas 的 sortingOrder。最终 sortingOrder 越大的对象越排前面。
             if (lhs.sortingOrder != rhs.sortingOrder)
                 return rhs.sortingOrder.CompareTo(lhs.sortingOrder);
 
+            // sortingOrder 相同，使用 depth 比较
+            // PhysicsRaycaster 和 Physics2DRaycaster 中 depth 都被设置为了 0；
+            // GraphicRaycaster 检测所得的对象的 depth 就是继承自 Graphic 类的对象所在的 Graphic 的 depth，
+            // 即 Canvas 下所有 Graphic 深度遍历的顺序。比较同样也是按照降序进行的，因此越嵌套在靠近 Canvas 的对象越排在前面。
             // comparing depth only makes sense if the two raycast results have the same root canvas (case 912396)
             if (lhs.depth != rhs.depth && lhs.module.rootRaycaster == rhs.module.rootRaycaster)
                 return rhs.depth.CompareTo(lhs.depth);
 
+            // depth 相同，使用 distance 比较
+            // PhysicsRaycaster 中的 distance 就是 RaycastHit 的 distance(射线起点到射线碰撞点的距离)。
+            // Physics2DRaycaster 类中返回的是 Camera 的位置和射线碰撞点之间的距离。
+            // GraphicRaycaster 类中 distance 计算如下:
+            // var go = m_RaycastResults[index].gameObject;
+            // Transform trans = go.transform
+            // Vector3 transForward = trans.forward;
+            // distance = Vector3.Dot(transForward, trans.position - currentEventCamera.transform.position) / Vector3.Dot(transForward, ray.direction);
+            // 距离 distance 越小越靠前。
             if (lhs.distance != rhs.distance)
                 return lhs.distance.CompareTo(rhs.distance);
 
+            // 最后如果上述情况都不能满足，使用 index 比较。先被射线检测到的对象排在前面。
             return lhs.index.CompareTo(rhs.index);
         }
 

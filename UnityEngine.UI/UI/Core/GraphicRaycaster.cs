@@ -4,6 +4,8 @@ using System.Text;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
+// https://blog.lujun.co/2019/07/20/unity_event_system_raycasters/
+
 namespace UnityEngine.UI
 {
     [AddComponentMenu("Event/Graphic Raycaster")]
