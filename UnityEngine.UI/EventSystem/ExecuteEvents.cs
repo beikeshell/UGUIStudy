@@ -6,6 +6,13 @@ namespace UnityEngine.EventSystems
 {
     public static class ExecuteEvents
     {
+        /// <summary>
+        /// 首先是在ExecuteEvents中定义了委托类型EventFunction，泛型委托接收一个handler和一个eventData作为参数。
+        /// 其实之前所有的事件调用函数OnXxx()都是符合这一委托类型的方法。
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <param name="eventData"></param>
+        /// <typeparam name="T1"></typeparam>
         public delegate void EventFunction<T1>(T1 handler, BaseEventData eventData);
 
         public static T ValidateEventData<T>(BaseEventData data) where T : class
@@ -15,6 +22,10 @@ namespace UnityEngine.EventSystems
             return data as T;
         }
 
+        /// <summary>
+        /// 在ExecuteEvents中声明一个静态私有的方法，作为委托EventFunction的实例（事件）。
+        /// 该委托的实例会传入两个参数，handler和eventData，而该方法的内容就是调用handler.OnPointerEnter(...)
+        /// </summary>
         private static readonly EventFunction<IPointerEnterHandler> s_PointerEnterHandler = Execute;
 
         private static void Execute(IPointerEnterHandler handler, BaseEventData eventData)
@@ -134,6 +145,10 @@ namespace UnityEngine.EventSystems
             handler.OnCancel(eventData);
         }
 
+        /// <summary>
+        /// 公有属性来获取私有委托对象
+        /// 这么做应该就是确保pointerEnterHandler只读：
+        /// </summary>
         public static EventFunction<IPointerEnterHandler> pointerEnterHandler
         {
             get { return s_PointerEnterHandler; }
@@ -235,6 +250,19 @@ namespace UnityEngine.EventSystems
 
         private static readonly ObjectPool<List<IEventSystemHandler>> s_HandlerListPool = new ObjectPool<List<IEventSystemHandler>>(null, l => l.Clear());
 
+        /// <summary>
+        /// 这个就是ExecuteEvents.Execute(...)了，也是一个泛型方法，注意第三个参数functor就是之前的对应私有委托对象的公有属性。
+        /// 对应到PointerEnter类型之后就是下边这个样子：
+        /// ExecuteEvents.Execute(pointerEvent.pointerPress, pointerEvent, ExecuteEvents.pointerClickHandler);
+        ///
+        /// 获取target所有可以响应该事件的组件component存入internalHandlers，然后执行它们的回调方法。
+        /// 最后返回一个bool值internalHandlers是否为空，即是否有组件可以响应（响应了）这次调用要执行的事件。
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="eventData"></param>
+        /// <param name="functor"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static bool Execute<T>(GameObject target, BaseEventData eventData, EventFunction<T> functor) where T : IEventSystemHandler
         {
             var internalHandlers = s_HandlerListPool.Get();
@@ -273,6 +301,9 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Execute the specified event on the first game object underneath the current touch.
+        /// 不同的是，当传入一个GameObject时，不再是当做target使用，而是获取到从该对象到顶级父节点之间所经历的的全部对象GetEventChain，
+        /// 然后自下而上遍历这些对象，调用Execute。
+        /// 当有对象可以响应该事件时（Execute返回true）则停止并返回该对象。
         /// </summary>
         private static readonly List<Transform> s_InternalTransformList = new List<Transform>(30);
 
@@ -340,6 +371,8 @@ namespace UnityEngine.EventSystems
         }
 
         /// <summary>
+        /// 当GameObject触发了某事件，获取响应该事件的对象（即挂有实现了对应Handler接口的component的对象）。
+        /// 在获取时会从给定的对象开始，自下而上遍历节点树，直到找到第一个可以响应事件的对象并返回。
         /// Bubble the specified event on the game object, figuring out which object will actually receive the event.
         /// </summary>
         public static GameObject GetEventHandler<T>(GameObject root) where T : IEventSystemHandler
