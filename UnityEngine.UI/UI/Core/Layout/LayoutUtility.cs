@@ -143,6 +143,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Gets a calculated layout property for the layout element with the given RectTransform.
+        /// 获取这个节点上的所有ILayoutElement，遍历之，float prop = property(layoutComp)获取到我们要取的参数值，
+        /// 如minWidth，preferredWidth和flexibleWidth等，保存到prop，同时会把当前遍历到的ILayoutElement记录为source。
+        /// 如果遍历过程中遇到有优先级priority更高的或者尺寸更大的，则会替换掉旧值。
         /// </summary>
         /// <param name="rect">The RectTransform of the layout element to get a property for.</param>
         /// <param name="property">The property to calculate.</param>

@@ -79,6 +79,14 @@ namespace UnityEngine.UI
             s_Rebuilders.Release(rebuilder);
         }
 
+        /// <summary>
+        /// 只处理CanvasUpdate.Layout阶段的重建动作，核心内容四行代码，涉及到两个函数PerformLayoutCalculation和PerformLayoutControl，
+        /// 分别用于计算参数和设置尺寸，先水平方向后竖直方向。
+        /// 下边是PerformLayoutCalculation和PerformLayoutControl的定义，
+        /// 前边的注释中提到了在这两个方法中会重复调用相同的GetComponents，虽然开销会比较大但无法避免，
+        /// 【注意】把结果缓存起来（使用Dictionary等）会有更多的额外性能开销。
+        /// </summary>
+        /// <param name="executing"></param>
         public void Rebuild(CanvasUpdate executing)
         {
             switch (executing)
@@ -97,6 +105,15 @@ namespace UnityEngine.UI
             }
         }
 
+        /// <summary>
+        /// 在执行完CalculateLayoutInputXxx()之后，该ILayoutElement中的各数值都是计算和更新后的状态了，此时可以该调用ILayoutController的SetLayoutXxx方法来更新布局。
+        ///
+        /// PerformLayoutControl同样是传入两个参数，RectTransform和一个UnityAction<Component>，在方法中，获取rect所有的ILayoutController组件，
+        /// 先对其中所有的ILayoutSelfController调用传入的action，接下来对其中的非ILayoutSelfController执行action，
+        /// 最后对rect的子节点递归地调用PerformLayoutControl。真正的逻辑就藏在action里边
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="action"></param>
         private void PerformLayoutControl(RectTransform rect, UnityAction<Component> action)
         {
             if (rect == null)
@@ -132,6 +149,9 @@ namespace UnityEngine.UI
         }
 
 
+        // PerformLayoutCalculation需要传入两个参数，一个RectTransform和一个UnityAction<Component>。
+        // 函数内部也会对子节点递归调用PerformLayoutCalculation，在完成子孙结点的控制之后，最后再处理自己身上的各ILayoutElement组件
+        // 深度优先
         private void PerformLayoutCalculation(RectTransform rect, UnityAction<Component> action)
         {
             if (rect == null)
@@ -141,10 +161,6 @@ namespace UnityEngine.UI
             rect.GetComponents(typeof(ILayoutElement), components);
             StripDisabledBehavioursFromList(components);
 
-            // If there are no controllers on this rect we can skip this entire sub-tree
-            // We don't need to consider controllers on children deeper in the sub-tree either,
-            // since they will be their own roots.
-            // 上面这段注释是有问题的。
             // 如果当前rect包含有ILayoutElement元素或者本身就是ILayoutGroup，那么需要继续往下递归遍历，否则什么也不做
             if (components.Count > 0  || rect.GetComponent(typeof(ILayoutGroup)))
             {
@@ -243,6 +259,7 @@ namespace UnityEngine.UI
 
         public void LayoutComplete()
         {
+            // 把自己放回池子
             s_Rebuilders.Release(this);
         }
 

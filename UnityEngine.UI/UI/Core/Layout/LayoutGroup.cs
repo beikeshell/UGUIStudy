@@ -352,7 +352,8 @@ namespace UnityEngine.UI
         protected override void OnRectTransformDimensionsChange()
         {
             base.OnRectTransformDimensionsChange();
-            // 注意OnRectTransformDimensionsChange中有一个isRootLayoutGroup的属性判断。只有该LayoutGroup没有受控于父节点的ILayoutGroup时才会触发SetDirty。
+            // 注意OnRectTransformDimensionsChange中有一个isRootLayoutGroup的属性判断。
+            // 只有该LayoutGroup没有受控于父节点的ILayoutGroup时才会触发SetDirty。
             if (isRootLayoutGroup)
                 SetDirty();
         }
