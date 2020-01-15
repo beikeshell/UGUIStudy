@@ -6,6 +6,8 @@ namespace UnityEngine.UI
     [Serializable]
     /// <summary>
     /// Structure storing details related to navigation.
+    /// 导航即是对于当前选中的Selectable，以何种方式获取它的上边、下边、左边或右边的下一个（或上一个）Selectable。
+    /// Navigation结构中存储的是当前导航的模式及相关的Selectable。
     /// </summary>
     public struct Navigation : IEquatable<Navigation>
     {

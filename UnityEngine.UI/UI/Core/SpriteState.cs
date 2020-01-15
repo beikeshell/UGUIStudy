@@ -6,6 +6,7 @@ namespace UnityEngine.UI
     [Serializable]
     /// <summary>
     /// Structure to store the state of a sprite transition on a Selectable.
+    /// 与ColorBlock套路相似，3个私有成员和公有属性
     /// </summary>
     public struct SpriteState : IEquatable<SpriteState>
     {

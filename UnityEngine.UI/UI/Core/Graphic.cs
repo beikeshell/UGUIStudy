@@ -911,6 +911,9 @@ namespace UnityEngine.UI
 
         ///<summary>
         ///Tweens the CanvasRenderer color associated with this Graphic.
+        /// 指定了目标颜色和用时等参数，在指定的时间内变化到目标颜色。
+        /// 内部使用到一个ColorTween的类，它是用协程实现的一个逐帧更新的颜色动画，指定初始和目标颜色，变化时间，
+        /// 是否忽略TimeScale，变化模式（RGB变化/Alpha变化）。
         ///</summary>
         ///<param name="targetColor">Target color.</param>
         ///<param name="duration">Tween duration.</param>

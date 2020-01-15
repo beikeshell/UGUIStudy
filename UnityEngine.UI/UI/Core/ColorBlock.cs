@@ -5,7 +5,9 @@ namespace UnityEngine.UI
 {
     [Serializable]
     /// <summary>
-    ///   Structure to store the state of a color transition on a Selectable.
+    /// Structure to store the state of a color transition on a Selectable.
+    /// 实现了接口IEquatable，内含Equals方法，用于判断两个对象是否相等。
+    /// 结构里边包含了6个私有成员变量及它们对应的公有的调用接口（属性形式）
     /// </summary>
     public struct ColorBlock : IEquatable<ColorBlock>
     {

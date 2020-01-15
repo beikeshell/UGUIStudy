@@ -7,10 +7,17 @@ namespace UnityEngine.UI
 {
     [AddComponentMenu("UI/Selectable", 70)]
     [ExecuteAlways]
+    // 表示当在编辑器的场景视图中点击了某个GameObject时，如果点击的是某个prefab的一部分，那么会选中这个prefab的根节点，因为根节点被认为是SelectionBase。
+    // 如果给脚本增加此属性，则挂载该脚本的对象会同样被认为是SelectionBase。
     [SelectionBase]
     [DisallowMultipleComponent]
     /// <summary>
     /// Simple selectable object - derived from to create a selectable control.
+    /// Selectable承担的逻辑是对玩家的输入产生反馈。它是交互的控件的基类，能够响应点击（或鼠标）的事件而产生动画效果，同时有导航功能（Navigation）。
+    /// 事实上，最简单的交互控件按钮Button，也仅仅是在Selectable之上多了点击事件回调的处理。
+    ///
+    /// 衍生类：Button、Dropdown、InputField、Scrollbar、Slider、Toggle
+    ///
     /// </summary>
     public class Selectable
         :
@@ -20,6 +27,7 @@ namespace UnityEngine.UI
             IPointerEnterHandler, IPointerExitHandler,
             ISelectHandler, IDeselectHandler
     {
+        // 存储的是当前激活状态的Selectable实例
         private static Selectable[] s_Selectables = new Selectable[10];
         private static int s_SelectableCount = 0;
 
@@ -131,6 +139,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         ///Transition mode for a Selectable.
+        /// 该Selectable组件使用的是哪种形式的转变动画
+        /// 依次是：不使用动画、使用颜色变化、使用变换sprite、使用Animation。
+        /// 三种动画形式对应会用到后边三个结构（或类）：ColorBlock、SpriteState和AnimationTriggers
         /// </summary>
         public enum Transition
         {
@@ -400,7 +411,10 @@ namespace UnityEngine.UI
 
         private bool isPointerInside { get; set; }
         private bool isPointerDown { get; set; }
+        // 当前的selectable是否被选中
+        // 在回调方法OnSelect和OnDeselect等中会改变此值
         private bool hasSelection { get; set; }
+
 
         protected Selectable()
         {
@@ -439,21 +453,28 @@ namespace UnityEngine.UI
         /// </example>
         public Animator animator
         {
+            // animator得到的是Animator组件
             get { return GetComponent<Animator>(); }
         }
 
         protected override void Awake()
         {
+            // 在这里初始化m_TargetGraphic
+            // 获取到的都是该Selectable上的Graphic组件
             if (m_TargetGraphic == null)
                 m_TargetGraphic = GetComponent<Graphic>();
         }
 
         private readonly List<CanvasGroup> m_CanvasGroupCache = new List<CanvasGroup>();
 
+        /// <summary>
+        /// 覆写的UIBehaviour的方法，
+        /// 当该对象及向上的父级节点对象有挂载CanvasGroup时，需要根据这些CanvasGroup的可交互状态来更新m_GroupsAllowInteraction。
+        /// </summary>
         protected override void OnCanvasGroupChanged()
         {
             // Figure out if parent groups allow interaction
-            // If no interaction is alowed... then we need
+            // If no interaction is allowed... then we need
             // to not do that :)
             var groupAllowInteraction = true;
             Transform t = transform;
@@ -525,6 +546,8 @@ namespace UnityEngine.UI
         }
 
         // Select on enable and add to the list.
+        // 在OnEnable时，Selectable会把自己加入到s_Selectables，
+        // 最后调用DoStateTransition来计算并更新该Selectable的状态及动画。
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -554,6 +577,9 @@ namespace UnityEngine.UI
             OnCanvasGroupChanged();
         }
 
+        /// <summary>
+        /// 当属性（状态）发生变化时，调用以更新变换动画，在编辑器模式下且游戏未在运行中时，立即执行，其它的状态会播放变换的动画。
+        /// </summary>
         private void OnSetProperty()
         {
 #if UNITY_EDITOR
@@ -565,11 +591,14 @@ namespace UnityEngine.UI
         }
 
         // Remove from the list.
+        // 从s_Selectables中移除自己
+        // 调用InstantClearState立即清除状态及动画。
         protected override void OnDisable()
         {
             m_WillRemove = true;
             s_IsDirty = true;
 
+            // 调用InstantClearState立即清除状态及动画。
             InstantClearState();
             base.OnDisable();
         }
@@ -618,6 +647,9 @@ namespace UnityEngine.UI
 
 #endif // if UNITY_EDITOR
 
+        /// <summary>
+        /// 表示当前该Selectable的状态
+        /// </summary>
         protected SelectionState currentSelectionState
         {
             get
@@ -634,6 +666,10 @@ namespace UnityEngine.UI
             }
         }
 
+        /// <summary>
+        /// 立即清除动画状态，先是重置各状态，然后与DoStateTransition有点相似，
+        /// 根据不同的转换动画类型，将其重置，并且StartColorTween传入参数instant为true，即颜色补间动画的时长是0，立即变化到目标颜色。
+        /// </summary>
         protected virtual void InstantClearState()
         {
             string triggerName = m_AnimationTriggers.normalTrigger;
@@ -658,6 +694,9 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Transition the Selectable to the entered state.
+        ///
+        /// 依据三种不同的转换动画的类型，有三种具体的状态转变函数，StartColorTween，DoSpriteSwap和TriggerAnimation，根据不同的选择状态有不同的参数。
+        /// DoStateTransition实际上就是调用不同的状态转变函数并传入对应的参数。
         /// </summary>
         /// <param name="state">State to transition to</param>
         /// <param name="instant">Should the transition occur instantly.</param>
@@ -720,6 +759,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// An enumeration of selected states of objects
+        /// 表示当前Selectable组件的状态
         /// </summary>
         protected enum SelectionState
         {
@@ -848,6 +888,12 @@ namespace UnityEngine.UI
             return bestPick;
         }
 
+        /// <summary>
+        /// 给定一个矩形和一个矢量，获取从矩形中心沿着矢量方向投射出射线与矩形相交的一点。
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="dir"></param>
+        /// <returns></returns>
         private static Vector3 GetPointOnRectEdge(RectTransform rect, Vector2 dir)
         {
             if (rect == null)
@@ -1090,6 +1136,7 @@ namespace UnityEngine.UI
                 !animator.hasBoundPlayables || string.IsNullOrEmpty(triggername))
                 return;
 
+            // animator用ResetTrigger会停掉对应的动画，然后用SetTrigger可以开启对应的动画。
             animator.ResetTrigger(m_AnimationTriggers.normalTrigger);
             animator.ResetTrigger(m_AnimationTriggers.highlightedTrigger);
             animator.ResetTrigger(m_AnimationTriggers.pressedTrigger);
@@ -1150,6 +1197,13 @@ namespace UnityEngine.UI
         }
 
         // Change the button to the correct state
+        /// <summary>
+        /// EvaluateAndTransitionToSelectionState会根据传入的事件来计算和更新转换动画的状态，
+        /// 在此之前，OnPointerEnter还会改变状态值isPointerInside为true，对应在OnPointerExit时会将此值设为false。
+        /// 与此相似的还有OnSelect和OnDeselect，对应状态值hasSelection；
+        /// OnPointerDown和OnPointerUp，对应状态值isPointerDown。
+        /// 这些方法的共同之处是先改变对应状态值，然后调用EvaluateAndTransitionToSelectionState。
+        /// </summary>
         private void EvaluateAndTransitionToSelectionState()
         {
             if (!IsActive() || !IsInteractable())

@@ -3,6 +3,10 @@ using UnityEngine.Serialization;
 
 namespace UnityEngine.UI
 {
+    /// <summary>
+    /// 与ColorBlock和SpriteState相似，直接用的类而不是实现接口IEquatable的结构，而且也没有覆写Equals或GetHashCode方法。
+    /// 有4个私有成员和公有属性：
+    /// </summary>
     [Serializable]
     public class AnimationTriggers
     {
