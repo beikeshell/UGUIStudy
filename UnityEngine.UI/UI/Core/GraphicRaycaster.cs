@@ -356,7 +356,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Perform a raycast into the screen and collect all graphics underneath it.
-        /// 首先是做了一些是否有效的判断，然后会在层级结构中自下而上地遍历，直到没有更多的父级节点或者由overrideSorting的Canvas为止。
+        /// 首先是做了一些是否有效的判断，然后会在层级结构中自下而上地遍历，直到没有更多的父级节点或者有overrideSorting的Canvas为止。
         /// 遍历过程中，如果遇到有ICanvasRaycastFilter（Image实现有此接口）和CanvasGroup则要根据二者的实现及参数做出一些判断，
         /// 如果都通过了检测，则认为这次投射有效返回true。
         /// </summary>
