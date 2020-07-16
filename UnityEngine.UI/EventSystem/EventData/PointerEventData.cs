@@ -6,7 +6,7 @@ namespace UnityEngine.EventSystems
 {
     /// <summary>
     /// Each touch event creates one of these containing all the relevant information.
-    /// 每个触摸事件都会创建其中一个包含所有相关信息的PointerEventData。
+    /// 每个触摸/点击事件都会创建一个包含所有相关信息的PointerEventData。
     /// </summary>
     public class PointerEventData : BaseEventData
     {
@@ -212,7 +212,7 @@ namespace UnityEngine.EventSystems
             eligibleForClick = false;
 
             pointerId = -1;
-            position = Vector2.zero; // Current position of the mouse or touch event
+            position = Vector2.zero; // Current 【screen】 position of the mouse or touch event
             delta = Vector2.zero; // Delta since last update
             pressPosition = Vector2.zero; // Delta since the event started being tracked
             clickTime = 0.0f; // The last time a click event was sent out (used for double-clicks)

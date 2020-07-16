@@ -240,8 +240,7 @@ namespace UnityEngine.UI
 
             LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
 
-            if (m_OnDirtyLayoutCallback != null)
-                m_OnDirtyLayoutCallback();
+            m_OnDirtyLayoutCallback?.Invoke();
         }
 
         /// <summary>
@@ -340,8 +339,8 @@ namespace UnityEngine.UI
         {
             get
             {
-                // The RectTransform is a required component that must not be destroyed. Based on this assumption, a
-                // null-reference check is sufficient.
+                // The RectTransform is a required component that must not be destroyed.
+                // Based on this assumption, a null-reference check is sufficient.
                 if (ReferenceEquals(m_RectTransform, null))
                 {
                     m_RectTransform = GetComponent<RectTransform>();
@@ -441,7 +440,8 @@ namespace UnityEngine.UI
         /// <remarks>
         /// This is the material that actually gets sent to the CanvasRenderer.
         /// By default it's the same as [[Graphic.material]].
-        /// When extending Graphic you can override this to send a different material to the CanvasRenderer than the one set by Graphic.material.
+        /// When extending Graphic you can override this to send a different material to the CanvasRenderer
+        /// than the one set by Graphic.material.
         /// This is useful if you want to modify the user set material in a non destructive manner.
         /// </remarks>
         public virtual Material materialForRendering

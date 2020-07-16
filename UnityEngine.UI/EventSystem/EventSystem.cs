@@ -130,7 +130,8 @@ namespace UnityEngine.EventSystems
         /// Flag to say whether the EventSystem thinks it should be paused or not based upon focused state.
         /// </summary>
         /// <remarks>
-        /// Used to determine inside the individual InputModules if the module should be ticked while the application doesnt have focus.
+        /// Used to determine inside the individual InputModules
+        /// if the module should be ticked while the application doesnt have focus.
         /// </remarks>
         public bool isFocused
         {
@@ -382,6 +383,10 @@ namespace UnityEngine.EventSystems
         /// }
         /// </code>
         /// </example>
+        ///
+
+        ///
+        /// 这个方法通常可用于判断当前是否点击在UI上
         public bool IsPointerOverGameObject(int pointerId)
         {
             if (m_CurrentInputModule == null)
@@ -399,7 +404,7 @@ namespace UnityEngine.EventSystems
             m_EventSystems.Add(this);
         }
 
-        // OnDisable中把自己从静态时间系统列表中删除（如果m_CurrentInputModule不为null，则调用其DeactivateModule方法）
+        // OnDisable中把自己从静态事件系统列表中删除（如果m_CurrentInputModule不为null，则调用其DeactivateModule方法）
         protected override void OnDisable()
         {
             if (m_CurrentInputModule != null)
@@ -431,9 +436,9 @@ namespace UnityEngine.EventSystems
 
         //每帧更新
         //做三件事情：
-        //（1）在TickModules函数中遍历所有可用InputModule，并调用其UpdateModule方法
-        //（2）检查输入模块是否发生变化。遍历InputModule列表，找到第一个可用（被支持且应当被激活）的InputModule，设置m_CurrentInputModule
-        //（3）调用当前InputModule的Process处理函数
+        //    （1）在TickModules函数中遍历所有可用InputModule，并调用其UpdateModule方法
+        //    （2）检查输入模块是否发生变化。遍历InputModule列表，找到第一个可用（被支持且被激活）的InputModule，设置m_CurrentInputModule
+        //    （3）如果当前输入模块没发生变化，调用当前InputModule的Process处理函数
         protected virtual void Update()
         {
             if (current != this)
@@ -456,6 +461,7 @@ namespace UnityEngine.EventSystems
             }
 
             // no event module set... set the first valid one...
+            //如果上面循环没有正确设置输入模块，那么选在第一个有效模块作为当前输入模块
             if (m_CurrentInputModule == null)
             {
                 for (var i = 0; i < m_SystemInputModules.Count; i++)
@@ -476,7 +482,9 @@ namespace UnityEngine.EventSystems
         }
 
         // 切换InputModule
-        // 做了两件事情：（1）调用前一个InputModule的DeactivateModule函数（2）调用当前InputModule的ActivateModule函数
+        // 做了两件事情：
+        //     （1）调用前一个InputModule的DeactivateModule函数
+        //     （2）调用当前InputModule的ActivateModule函数，激活该模块
         private void ChangeEventModule(BaseInputModule module)
         {
             if (m_CurrentInputModule == module)
