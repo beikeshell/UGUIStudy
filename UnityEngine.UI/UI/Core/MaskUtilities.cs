@@ -169,6 +169,7 @@ namespace UnityEngine.UI
                     clippable.gameObject.GetComponentsInParent(false, canvasComponents);
                     for (int i = canvasComponents.Count - 1; i >= 0; i--)
                     {
+                        // IsDescendantOrSelf --> 判断传入的两个Transform对象，是否后者是前者的子节点（后代结点）或者两个节点是同一个节点
                         if (!IsDescendantOrSelf(canvasComponents[i].transform, componentToReturn.transform)
                             && canvasComponents[i].overrideSorting)
                         {

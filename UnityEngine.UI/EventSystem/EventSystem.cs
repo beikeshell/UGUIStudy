@@ -130,7 +130,8 @@ namespace UnityEngine.EventSystems
         /// Flag to say whether the EventSystem thinks it should be paused or not based upon focused state.
         /// </summary>
         /// <remarks>
-        /// Used to determine inside the individual InputModules if the module should be ticked while the application doesnt have focus.
+        /// Used to determine inside the individual InputModules
+        /// if the module should be ticked while the application doesnt have focus.
         /// </remarks>
         public bool isFocused
         {
@@ -382,6 +383,10 @@ namespace UnityEngine.EventSystems
         /// }
         /// </code>
         /// </example>
+        ///
+
+        ///
+        /// 这个方法通常可用于判断当前是否点击在UI上
         public bool IsPointerOverGameObject(int pointerId)
         {
             if (m_CurrentInputModule == null)
