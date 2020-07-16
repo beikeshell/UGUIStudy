@@ -78,6 +78,7 @@ namespace UnityEngine.EventSystems
             PointerEventData pointerData;
             var created = GetPointerData(input.fingerId, out pointerData, true);
 
+            //使用标记设置为false，表示该pointerData未被使用过
             pointerData.Reset();
 
             pressed = created || (input.phase == TouchPhase.Began);

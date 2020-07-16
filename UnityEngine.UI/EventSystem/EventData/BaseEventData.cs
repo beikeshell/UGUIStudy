@@ -38,6 +38,7 @@ namespace UnityEngine.EventSystems
 
     /// <summary>
     /// A class that contains the base event data that is common to all event types in the new EventSystem.
+    /// 相对于AbstractEventData多了两个属性（1）当前输入模块（2）当前被选择对象
     /// </summary>
     public class BaseEventData : AbstractEventData
     {

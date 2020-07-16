@@ -44,7 +44,7 @@ namespace UnityEngine.EventSystems
         /// For UI.Graphic elements this will be the values from that graphic's Canvas
         /// For 3D objects this will always be 0.
         /// For 2D objects if a SpriteRenderer is attached to the same object as the hit collider
-        /// that SpriteRenderer sortingLayerID will be used.
+        ///     that SpriteRenderer sortingLayerID will be used.
         /// </remarks>
         public int sortingLayer;
 
@@ -52,10 +52,10 @@ namespace UnityEngine.EventSystems
         /// The SortingOrder for the hit object.
         /// </summary>
         /// <remarks>
-        /// For Graphic elements this will be the values from that graphics Canvas
+        /// For Graphic elements this will be the values from that graphic's Canvas
         /// For 3D objects this will always be 0.
         /// For 2D objects if a SpriteRenderer is attached to the same object as the hit collider
-        /// that SpriteRenderer sortingOrder will be used.
+        ///     that SpriteRenderer sortingOrder will be used.
         /// </remarks>
         public int sortingOrder;
 

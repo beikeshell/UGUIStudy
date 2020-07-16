@@ -115,6 +115,7 @@ namespace UnityEngine.EventSystems
         /// <summary>
         /// Process the current tick for the module.
         /// 子类实现
+        /// 在EventSystem中被每帧调用
         /// </summary>
         public abstract void Process();
 
@@ -201,6 +202,9 @@ namespace UnityEngine.EventSystems
         // send exit events up to (but not including) the common root. Then send enter events up to
         // (but not including the common root).
         /// <summary>
+        ///寻找之前最后一次进入的对象，以及当前进入的对象的共同父节点，然后对从离开的对象到共同父节点（不含共同的父节点）发送“离开（Exit）”事件，
+        ///  同理对从进入的对象到共同父节点（不含共同的父节点）发送“进入（Enter）”事件。
+        ///
         ///整个过程分为几步：
         /// （1）- 如果没有新进入的对象，或者currentPointerData.pointerEnter是null，那么就不处理进入（Enter），只处理离开（Exit），
         ///   即对currentPointerData.hovered中的各个对象都执行离开的事件，并在最后确保将currentPointerData.pointerEnter设为null
@@ -282,7 +286,8 @@ namespace UnityEngine.EventSystems
             if (m_AxisEventData == null)
                 m_AxisEventData = new AxisEventData(eventSystem);
 
-            m_AxisEventData.Reset(); //设置m_Used标记为假，表示该事件数据未被使用过
+            //设置m_Used标记为假，表示该事件数据未被使用过
+            m_AxisEventData.Reset();
             m_AxisEventData.moveVector = new Vector2(x, y);
             m_AxisEventData.moveDir = DetermineMoveDirection(x, y, moveDeadZone);
             return m_AxisEventData;
@@ -297,6 +302,7 @@ namespace UnityEngine.EventSystems
             if (m_BaseEventData == null)
                 m_BaseEventData = new BaseEventData(eventSystem);
 
+            //设置m_Used标记为假，表示该事件数据未被使用过
             m_BaseEventData.Reset();
             return m_BaseEventData;
         }
@@ -335,6 +341,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Update the internal state of the Module.
+        /// 在EventSystem中被每帧调用
         /// </summary>
         public virtual void UpdateModule()
         {}

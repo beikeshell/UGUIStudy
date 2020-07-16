@@ -12,6 +12,7 @@ namespace UnityEngine.EventSystems
     {
         /// <summary>
         /// Input press tracking.
+        /// 鼠标按键枚举值
         /// 表示鼠标哪个按键被按下了
         /// </summary>
         public enum InputButton
@@ -78,6 +79,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The object that the press happened on even if it can not handle the press event.
+        /// 发生【按下】事件的对象，即使它不能响应该事件
         /// </summary>
         public GameObject rawPointerPress { get; set; }
 
@@ -89,30 +91,38 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// RaycastResult associated with the current event.
-        /// 当前事件的射线检测结果
+        /// 【当前事件】的射线检测结果
         /// </summary>
         public RaycastResult pointerCurrentRaycast { get; set; }
 
         /// <summary>
         /// RaycastResult associated with the pointer press.
+        /// 【按下/点击】事件的射线检测结果
         /// </summary>
         public RaycastResult pointerPressRaycast { get; set; }
 
+        /// <summary>
+        /// 存储的是一组对象，这些对象都接收过OnPointerEnter事件
+        /// 详见HandlePointerExitAndEnter函数
+        /// </summary>
         public List<GameObject> hovered = new List<GameObject>();
 
         /// <summary>
         /// Is it possible to click this frame
-        /// 是不是符合条件的点击
+        /// 当前事件用于点击
         /// </summary>
         public bool eligibleForClick { get; set; }
 
         /// <summary>
         /// Id of the pointer (touch id).
+        /// 触摸ID
         /// </summary>
         public int pointerId { get; set; }
 
         /// <summary>
         /// Current pointer position.
+        /// 当前点击/触摸位置
+        /// 屏幕位置
         /// </summary>
         public Vector2 position { get; set; }
 

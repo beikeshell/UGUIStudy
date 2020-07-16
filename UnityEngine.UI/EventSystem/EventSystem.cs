@@ -391,6 +391,8 @@ namespace UnityEngine.EventSystems
         }
 
         // OnEnable中把自己加入到静态事件系统列表中
+        // current属性get访问器来看，总是会返回m_EventSystems第一个EventSytem对象返回
+        // 所以，就目前UGUI实现来说，EventSystem是一个单例
         protected override void OnEnable()
         {
             base.OnEnable();

@@ -2,6 +2,9 @@ namespace UnityEngine.EventSystems
 {
     /// <summary>
     /// Event Data associated with Axis Events (Controller / Keyboard).
+    /// 包含两个属性
+    ///     （1）移动方向 moveDir
+    ///     （2）移动矢量 moveVector
     /// </summary>
     public class AxisEventData : BaseEventData
     {
