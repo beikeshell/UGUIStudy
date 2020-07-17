@@ -29,6 +29,11 @@ namespace UnityEngine.EventSystems
         /// </summary>
         public const int kFakeTouchesId = -4;
 
+        /// <summary>
+        /// 用来产生并记录与【按键/点击】相对应的EventData字典
+        /// 【键】是PointerId或鼠标按键的枚举值
+        /// 【值】是PointerEventData
+        /// </summary>
         protected Dictionary<int, PointerEventData> m_PointerData = new Dictionary<int, PointerEventData>();
 
         /// <summary>
@@ -142,9 +147,44 @@ namespace UnityEngine.EventSystems
             return PointerEventData.FramePressState.NotChanged;
         }
 
+        /// <summary>
+        /// Information about a mouse button event.
+        /// 鼠标按键事件数据
+        /// 对PointerEventData的封装
+        /// 额外添加了一个表示当前帧鼠标状态【Pressed/Released/PressedAndReleased/NotChanged】的类型为PointerEventData.FramePressState变量buttonState
+        /// </summary>
+        public class MouseButtonEventData
+        {
+            /// <summary>
+            /// The state of the button this frame.
+            /// </summary>
+            public PointerEventData.FramePressState buttonState;
+
+            /// <summary>
+            /// Pointer data associated with the mouse event.
+            /// </summary>
+            public PointerEventData buttonData;
+
+            /// <summary>
+            /// Was the button pressed this frame?
+            /// </summary>
+            public bool PressedThisFrame()
+            {
+                return buttonState == PointerEventData.FramePressState.Pressed || buttonState == PointerEventData.FramePressState.PressedAndReleased;
+            }
+
+            /// <summary>
+            /// Was the button released this frame?
+            /// </summary>
+            public bool ReleasedThisFrame()
+            {
+                return buttonState == PointerEventData.FramePressState.Released || buttonState == PointerEventData.FramePressState.PressedAndReleased;
+            }
+        }
 
         /// <summary>
-        /// 对MouseButtonEventData的进一步封装。内部包含了一个鼠标按键的id InputButton 和一个MouseButtonEventData 。
+        /// 对MouseButtonEventData的进一步封装。
+        /// 内部包含了一个鼠标按键的id InputButton 和一个MouseButtonEventData 。
         /// </summary>
         protected class ButtonState
         {
@@ -167,6 +207,8 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// 一个BottomState list
+        /// 一个管理鼠标按键状态的列表
+        /// 每一项表示了某个鼠标按键的状态
         /// </summary>
         protected class MouseState
         {
@@ -212,6 +254,12 @@ namespace UnityEngine.EventSystems
                 return tracked;
             }
 
+            /// <summary>
+            /// 设置某个鼠标按键（左/中/右）状态
+            /// </summary>
+            /// <param name="button"></param>
+            /// <param name="stateForMouseButton"></param>
+            /// <param name="data"></param>
             public void SetButtonState(PointerEventData.InputButton button, PointerEventData.FramePressState stateForMouseButton, PointerEventData data)
             {
                 var toModify = GetButtonState(button);
@@ -220,38 +268,7 @@ namespace UnityEngine.EventSystems
             }
         }
 
-        /// <summary>
-        /// Information about a mouse button event.
-        /// 对PointerEventData的封装，表示鼠标按键事件数据
-        /// </summary>
-        public class MouseButtonEventData
-        {
-            /// <summary>
-            /// The state of the button this frame.
-            /// </summary>
-            public PointerEventData.FramePressState buttonState;
 
-            /// <summary>
-            /// Pointer data associated with the mouse event.
-            /// </summary>
-            public PointerEventData buttonData;
-
-            /// <summary>
-            /// Was the button pressed this frame?
-            /// </summary>
-            public bool PressedThisFrame()
-            {
-                return buttonState == PointerEventData.FramePressState.Pressed || buttonState == PointerEventData.FramePressState.PressedAndReleased;
-            }
-
-            /// <summary>
-            /// Was the button released this frame?
-            /// </summary>
-            public bool ReleasedThisFrame()
-            {
-                return buttonState == PointerEventData.FramePressState.Released || buttonState == PointerEventData.FramePressState.PressedAndReleased;
-            }
-        }
 
         private readonly MouseState m_MouseState = new MouseState();
 

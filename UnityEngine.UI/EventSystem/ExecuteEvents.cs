@@ -266,10 +266,13 @@ namespace UnityEngine.EventSystems
         public static bool Execute<T>(GameObject target, BaseEventData eventData, EventFunction<T> functor) where T : IEventSystemHandler
         {
             var internalHandlers = s_HandlerListPool.Get();
+            //找到target身上所有实现了IEventSystemHandler接口的组件
+            //且该组件处于激活状态且可用
             GetEventList<T>(target, internalHandlers);
             //  if (s_InternalHandlers.Count > 0)
             //      Debug.Log("Executinng " + typeof (T) + " on " + target);
 
+            //依次向这些T类型组件发送T类型的事件
             for (var i = 0; i < internalHandlers.Count; i++)
             {
                 T arg;
@@ -296,8 +299,12 @@ namespace UnityEngine.EventSystems
 
             var handlerCount = internalHandlers.Count;
             s_HandlerListPool.Release(internalHandlers);
+            //返回该事件是否被消费
             return handlerCount > 0;
         }
+
+
+        private static readonly List<Transform> s_InternalTransformList = new List<Transform>(30);
 
         /// <summary>
         /// Execute the specified event on the first game object underneath the current touch.
@@ -305,8 +312,6 @@ namespace UnityEngine.EventSystems
         /// 然后自下而上遍历这些对象，调用Execute。
         /// 当有对象可以响应该事件时（Execute返回true）则停止并返回该对象。
         /// </summary>
-        private static readonly List<Transform> s_InternalTransformList = new List<Transform>(30);
-
         public static GameObject ExecuteHierarchy<T>(GameObject root, BaseEventData eventData, EventFunction<T> callbackFunction) where T : IEventSystemHandler
         {
             GetEventChain(root, s_InternalTransformList);
@@ -348,6 +353,7 @@ namespace UnityEngine.EventSystems
             go.GetComponents(components);
             for (var i = 0; i < components.Count; i++)
             {
+                //ShouldSendToComponent找到T类型的组件，并且该组件可用且激活状态
                 if (!ShouldSendToComponent<T>(components[i]))
                     continue;
 

@@ -150,6 +150,10 @@ namespace UnityEngine.EventSystems
             set { m_CancelButton = value; }
         }
 
+        /// <summary>
+        /// 是否应该在应用失去焦点时忽略事件
+        /// </summary>
+        /// <returns></returns>
         private bool ShouldIgnoreEventsOnNoFocus()
         {
             switch (SystemInfo.operatingSystemFamily)

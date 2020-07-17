@@ -6,7 +6,9 @@ namespace UnityEngine.EventSystems
 {
     /// <summary>
     /// Each touch event creates one of these containing all the relevant information.
-    /// 每个触摸/点击事件都会创建一个包含所有相关信息的PointerEventData。
+    /// 每个类型的【触摸/点击/按键】事件都会创建一个包含所有相关信息的PointerEventData。
+    /// 比如：鼠标左键对应一个PointerEventData对象，鼠标右键对应另一个PointerEventData对象
+    /// PointerEventData只会在PointerInputModule的GetPointerData函数里面创建，其他所有地方都是从GetPointerData里面取数据
     /// </summary>
     public class PointerEventData : BaseEventData
     {
@@ -67,7 +69,7 @@ namespace UnityEngine.EventSystems
         public GameObject pointerEnter { get; set; }
 
         // The object that received 'OnPointerDown'.
-        // 接收OnPointerDown事件的游戏对象
+        // 接收OnPointerDown按下事件的游戏对象
         private GameObject m_PointerPress;
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace UnityEngine.EventSystems
         /// <summary>
         /// RaycastResult associated with the current event.
         /// 【当前事件】的射线检测结果
+        /// 当前事件：比如点击、PointerEnter等
         /// </summary>
         public RaycastResult pointerCurrentRaycast { get; set; }
 
@@ -121,8 +124,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Current pointer position.
-        /// 当前点击/触摸位置
-        /// 屏幕位置
+        /// 当前点击/触摸【屏幕】位置
         /// </summary>
         public Vector2 position { get; set; }
 
@@ -133,6 +135,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Position of the press.
+        /// 按下时的位置
         /// </summary>
         public Vector2 pressPosition { get; set; }
 
@@ -153,6 +156,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The last time a click event was sent. Used for double click
+        /// 上一次点击时间
         /// </summary>
         public float clickTime { get; set; }
 
@@ -183,7 +187,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// The amount of scroll since the last update.
-        /// 上次更新后的滑动增量
+        /// 与上一帧相比的滑动量
         /// </summary>
         public Vector2 scrollDelta { get; set; }
 
@@ -192,6 +196,7 @@ namespace UnityEngine.EventSystems
         /// </summary>
         /// <remarks>
         /// If you do not want a drag threshold set this to false in IInitializePotentialDragHandler.OnInitializePotentialDrag.
+        /// 是否使用拖拽阈值
         /// </remarks>
         public bool useDragThreshold { get; set; }
 

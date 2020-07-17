@@ -42,12 +42,30 @@ namespace UnityEngine.EventSystems
         [NonSerialized]
         protected List<RaycastResult> m_RaycastResultCache = new List<RaycastResult>();
 
+        /// <summary>
+        /// 缓存起来的对象
+        /// 会在GetAxisEventData函数中被反复使用
+        /// </summary>
         private AxisEventData m_AxisEventData;
 
         private EventSystem m_EventSystem;
+
+        /// <summary>
+        /// 缓存起来的对象
+        /// 会在GetBaseEventData函数中被反复使用
+        /// </summary>
         private BaseEventData m_BaseEventData;
 
+        /// <summary>
+        /// 自定义输入系统
+        /// 如果有自定义输入系统则使用该自定义输入系统
+        /// 否则使用默认输入系统
+        /// </summary>
         protected BaseInput m_InputOverride;
+
+        /// <summary>
+        /// 默认输入系统
+        /// </summary>
         private BaseInput m_DefaultInput;
 
         /// <summary>
@@ -103,11 +121,15 @@ namespace UnityEngine.EventSystems
         {
             base.OnEnable();
             m_EventSystem = GetComponent<EventSystem>();
+            //调用EventSystem的UpdateModules方法
+            //将自己加入到EventSystem的m_SystemInputModules缓存中
             m_EventSystem.UpdateModules();
         }
 
         protected override void OnDisable()
         {
+            //调用EventSystem的UpdateModules方法
+            //将自己从EventSystem的m_SystemInputModules缓存中移除
             m_EventSystem.UpdateModules();
             base.OnDisable();
         }
@@ -116,12 +138,14 @@ namespace UnityEngine.EventSystems
         /// Process the current tick for the module.
         /// 子类实现
         /// 在EventSystem中被每帧调用
+        /// 准确的说应该是当前输入模块没有发生变化时才会被调用
         /// </summary>
         public abstract void Process();
 
         /// <summary>
         /// Return the first valid RaycastResult.
         /// 找到第一个有效的RaycastResult
+        /// 有效的条件：RaycastResult对应的GameObject不为null
         /// </summary>
         protected static RaycastResult FindFirstRaycast(List<RaycastResult> candidates)
         {
@@ -137,6 +161,7 @@ namespace UnityEngine.EventSystems
 
         /// <summary>
         /// Given an input movement, determine the best MoveDirection.
+        /// 将移动向量转换为移动方向
         /// </summary>
         /// <param name="x">X movement.</param>
         /// <param name="y">Y movement.</param>
@@ -222,6 +247,7 @@ namespace UnityEngine.EventSystems
             // then exit
             if (newEnterTarget == null || currentPointerData.pointerEnter == null)
             {
+                //hovered中的GameObject都接收过PointerEnter事件
                 for (var i = 0; i < currentPointerData.hovered.Count; ++i)
                     ExecuteEvents.Execute(currentPointerData.hovered[i], currentPointerData, ExecuteEvents.pointerExitHandler);
 
