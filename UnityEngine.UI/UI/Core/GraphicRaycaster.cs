@@ -25,18 +25,22 @@ namespace UnityEngine.UI
         {
             /// <summary>
             /// Perform no raycasts.
+            /// 不执行任何射线检测
             /// </summary>
             None = 0,
             /// <summary>
             /// Perform a 2D raycast check to check for blocking 2D elements
+            /// 只检测2D物体
             /// </summary>
             TwoD = 1,
             /// <summary>
             /// Perform a 3D raycast check to check for blocking 3D elements
+            /// 只检测3D物体
             /// </summary>
             ThreeD = 2,
             /// <summary>
             /// Perform a 2D and a 3D raycasts to check for blocking 2D and 3D elements.
+            /// 同时检测2D和3D
             /// </summary>
             All = 3,
         }
@@ -58,7 +62,7 @@ namespace UnityEngine.UI
                 if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
                     return canvas.sortingOrder;
 
-                return base.sortOrderPriority;
+                return base.sortOrderPriority; //int.MinValue
             }
         }
 
@@ -76,7 +80,7 @@ namespace UnityEngine.UI
                 if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
                     return canvas.rootCanvas.renderOrder;
 
-                return base.renderOrderPriority;
+                return base.renderOrderPriority; //int.MinValue
             }
         }
 
@@ -225,7 +229,8 @@ namespace UnityEngine.UI
                 // Screen space is defined in pixels. The bottom-left of the screen is (0,0); the right-top is (pixelWidth -1,pixelHeight -1).
                 ray = currentEventCamera.ScreenPointToRay(eventPosition);
 
-            // Canvas renderMode 不为 RenderMode.ScreenSpaceOverlay 并且设置了 blockingObjects，此时就会 Blocked Objects 和 Blocked Mask 就会生效。
+            // Canvas renderMode 不为 RenderMode.ScreenSpaceOverlay 并且设置了 blockingObjects，
+            // 此时就会 Blocked Objects 和 Blocked Mask 就会生效。
             if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && blockingObjects != BlockingObjects.None)
             {
                 float distanceToClipPlane = 100.0f;
