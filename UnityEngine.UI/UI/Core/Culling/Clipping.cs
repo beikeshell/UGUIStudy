@@ -4,12 +4,14 @@ namespace UnityEngine.UI
 {
     /// <summary>
     /// Utility class to help when clipping using IClipper.
+    /// 工具类
     /// </summary>
     public static class Clipping
     {
         /// <summary>
         /// Find the Rect to use for clipping.
         /// Given the input RectMask2ds find a rectangle that is the overlap of all the inputs.
+        /// 返回一个包含所有RectMask2D的【区域交集】
         /// </summary>
         /// <param name="rectMaskParents">RectMasks to build the overlap rect from.</param>
         /// <param name="validRect">Was there a valid Rect found.</param>

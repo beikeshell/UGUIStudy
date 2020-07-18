@@ -19,7 +19,8 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// 此成员是一个RectMask2D(实现了IClipper，是裁剪动作的实施者)
-        ///
+        /// 在调用UpdateClipParent()时会调用静态的工具方法MaskUtilities.GetRectMaskForClippable 重新计算m_ParentMask，
+        /// 并且会将自身（IClippable）添加到实施裁减的父对象中（AddClippable），以接受其裁剪的动作。
         /// </summary>
         [NonSerialized]
         private RectMask2D m_ParentMask;
@@ -156,7 +157,7 @@ namespace UnityEngine.UI
         /// 代码如下：传入一个bool参数表示是否需要裁剪。在UpdateClipParent中如果判断出来不需要裁剪，会调用此方法并传入false，
         /// 在Cull被调用时也会判断并调用此方法更新裁剪状态。
         /// </summary>
-        /// <param name="cull"></param>
+        /// <param name="cull">是否需要裁剪</param>
         private void UpdateCull(bool cull)
         {
             if (canvasRenderer.cull != cull)

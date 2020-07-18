@@ -10,6 +10,7 @@ namespace UnityEngine.UI
     {
         /// <summary>
         /// Recalculate masking for this element and all children elements.
+        ///更新对【当前对象】和【所有子节点对象】的遮罩信息
         /// </summary>
         /// <remarks>
         /// Use this to update the internal state (recreate materials etc).
