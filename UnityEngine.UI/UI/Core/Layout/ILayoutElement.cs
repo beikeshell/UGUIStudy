@@ -4,7 +4,7 @@ using System.Collections;
 namespace UnityEngine.UI
 {
     /// <summary>
-    ///   A component is treated as a layout element by the auto layout system if it implements ILayoutElement.
+    ///   A component is treated as a layout element by the auto layout system if it implements ILayoutElement interface.
     /// </summary>
     /// <remarks>
     /// The layout system will invoke CalculateLayoutInputHorizontal before querying minWidth, preferredWidth, and flexibleWidth.
@@ -15,8 +15,10 @@ namespace UnityEngine.UI
     /// It can potentially save performance if these properties are cached when CalculateLayoutInputVertical is invoked,
     /// so they don't need to be recalculated every time the properties are queried.
     ///
-    /// The minWidth, preferredWidth, and flexibleWidth properties should not rely on any properties of the RectTransform of the layout element,
-    /// otherwise the behavior will be non-deterministic.
+    /// The minWidth, preferredWidth, and flexibleWidth properties 【should not】 rely on any properties
+    ///     of the RectTransform which the layout element belong,
+    /// otherwise the behavior will be non-deterministic. 【deterministic 确定的】
+    ///
     /// The minHeight, preferredHeight, and flexibleHeight properties may rely on horizontal aspects of the RectTransform,
     /// such as the width or the X component of the position.
     /// Any properties of the RectTransforms on child layout elements may always be relied on.

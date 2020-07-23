@@ -97,7 +97,9 @@ namespace UnityEngine.UI
                     // so reusing the results would entail storing results in a Dictionary or similar,
                     // which is probably a bigger overhead than performing GetComponents multiple times.
                     //
+                    //PerformLayoutCalculation用于计算参数
                     PerformLayoutCalculation(m_ToRebuild, e => (e as ILayoutElement).CalculateLayoutInputHorizontal());
+                    //PerformLayoutControl用于设置尺寸
                     PerformLayoutControl(m_ToRebuild, e => (e as ILayoutController).SetLayoutHorizontal());
                     PerformLayoutCalculation(m_ToRebuild, e => (e as ILayoutElement).CalculateLayoutInputVertical());
                     PerformLayoutControl(m_ToRebuild, e => (e as ILayoutController).SetLayoutVertical());
@@ -106,7 +108,8 @@ namespace UnityEngine.UI
         }
 
         /// <summary>
-        /// 在执行完CalculateLayoutInputXxx()之后，该ILayoutElement中的各数值都是计算和更新后的状态了，此时可以该调用ILayoutController的SetLayoutXxx方法来更新布局。
+        /// 在执行完CalculateLayoutInputXxx()之后，该ILayoutElement中的各数值都是计算和更新后的状态了，
+        /// 此时可以该调用ILayoutController的SetLayoutXxx方法来更新布局。
         ///
         /// PerformLayoutControl同样是传入两个参数，RectTransform和一个UnityAction<Component>，在方法中，获取rect所有的ILayoutController组件，
         /// 先对其中所有的ILayoutSelfController调用传入的action，接下来对其中的非ILayoutSelfController执行action，
@@ -179,7 +182,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Mark the given RectTransform as needing it's layout to be recalculated during the next layout pass.
-        /// 传入的rect开始，自下而上寻找，直到找到根部的LayoutGroup（即该LayoutGroup没有直接的父级LayoutGroup控制）
+        /// 传入的rect开始，自下而上寻找，直到找到根部的LayoutGroup（即该LayoutGroup没有【直接的】父级LayoutGroup控制）
         /// </summary>
         /// <param name="rect">Rect to rebuild.</param>
         public static void MarkLayoutForRebuild(RectTransform rect)

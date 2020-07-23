@@ -10,12 +10,12 @@ namespace UnityEngine.UI
     public static class LayoutUtility
     {
         /// <summary>
-        /// Returns the minimum size of the layout element.
+        /// Return minimum size of the layout element.
         /// </summary>
         /// <param name="rect">The RectTransform of the layout element to query.</param>
         /// <param name="axis">The axis to query. This can be 0 or 1.</param>
-        /// <remarks>All components on the GameObject that implement the ILayoutElement are queried.
-        /// The one with the highest priority which has a value for this setting is used.
+        /// <remarks> All components on the GameObject that implement the ILayoutElement are queried.
+        /// The one with the 【highest layout priority】 which has a value for this setting is used.
         /// If multiple components have this setting and have the same priority, the maximum value out of those is used.</remarks>
         public static float GetMinSize(RectTransform rect, int axis)
         {
@@ -169,7 +169,7 @@ namespace UnityEngine.UI
                     continue;
 
                 int priority = layoutComp.layoutPriority;
-                // If this layout components has lower priority than a previously used, ignore it.
+                // If this layout component has lower priority than a previously used, ignore it.
                 if (priority < maxPriority)
                     continue;
                 float prop = property(layoutComp);
@@ -185,7 +185,7 @@ namespace UnityEngine.UI
                     maxPriority = priority;
                     source = layoutComp;
                 }
-                // If the layout component has the same priority as a previously used,
+                // If this layout component has the same priority as a previously used,
                 // use the largest of the values with the same priority.
                 else if (prop > min)
                 {

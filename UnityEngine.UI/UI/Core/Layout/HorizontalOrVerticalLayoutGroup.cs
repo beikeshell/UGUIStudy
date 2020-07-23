@@ -84,7 +84,7 @@ namespace UnityEngine.UI
 
         /// <summary>
         /// Calculate the layout element properties for this layout element along the given axis.
-        /// (1) 第一个要注意的点就是参数，axis表示调用该方法是为了计算更新水平方向0还是竖直方向1的输入参数，
+        /// (1) 第一个要注意的点就是参数，axis表示调用该方法是为了计算更新【水平方向0】还是【竖直方向1】的输入参数，
         ///     而isVertical这是指当前的Layout是为了控制水平方向false还是竖直方向true；
         /// (2) 函数内部，首先是获取padding值，是否控制子节点尺寸，是否控制子节点间隔；
         /// (3) 初始化totalMin，totalPreferred和totalFlexible三个值；
@@ -110,6 +110,7 @@ namespace UnityEngine.UI
             float totalPreferred = combinedPadding;
             float totalFlexible = 0;
 
+            //isVertical和axis表示的方向不同时，此值为true
             bool alongOtherAxis = (isVertical ^ (axis == 1));
             for (int i = 0; i < rectChildren.Count; i++)
             {
@@ -125,6 +126,8 @@ namespace UnityEngine.UI
                     flexible *= scaleFactor;
                 }
 
+                //根据计算的方向和Layout自身控制的方向是否一致来更新totalMin，totalPreferred、totalFlexible
+                //如果方向是一致的，三个totalXXX的值都要加上当前遍历的子节点的这三个值
                 if (alongOtherAxis)
                 {
                     totalMin = Mathf.Max(min + combinedPadding, totalMin);
@@ -248,13 +251,14 @@ namespace UnityEngine.UI
         private void GetChildSizes(RectTransform child, int axis, bool controlSize, bool childForceExpand,
             out float min, out float preferred, out float flexible)
         {
+            //不控制子节点对应维度的值
             if (!controlSize)
             {
                 min = child.sizeDelta[axis];
                 preferred = min;
                 flexible = 0;
             }
-            else
+            else //控制子节点对应维度的值
             {
                 min = LayoutUtility.GetMinSize(child, axis);
                 preferred = LayoutUtility.GetPreferredSize(child, axis);

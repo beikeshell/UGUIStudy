@@ -49,6 +49,8 @@ namespace UnityEngine.UI
     ///</code>
     ///</example>
 
+    ///
+    /// BaseMeshEffect是用于修改生成的网格的特效类的抽象基类，Outline和Shadow等都是其衍生类或衍生类的衍生类。
     [ExecuteAlways]
     public abstract class BaseMeshEffect : UIBehaviour, IMeshModifier
     {
